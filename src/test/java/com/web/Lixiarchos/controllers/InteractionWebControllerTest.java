@@ -5,13 +5,13 @@ import com.web.Lixiarchos.model.Interaction;
 import com.web.Lixiarchos.model.Person;
 import com.web.Lixiarchos.repositories.InteractionRepository;
 import com.web.Lixiarchos.repositories.PersonRepository;
+import jakarta.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.springframework.ui.Model;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -25,6 +25,7 @@ class InteractionWebControllerTest {
     private PersonRepository personRepository;
     private InteractionWebController controller;
     private Model model;
+    private HttpServletRequest request;
 
     private Person personA;
     private Person personB;
@@ -35,6 +36,7 @@ class InteractionWebControllerTest {
         interactionRepository = mock(InteractionRepository.class);
         personRepository = mock(PersonRepository.class);
         model = mock(Model.class);
+        request = mock(HttpServletRequest.class);
 
         controller = new InteractionWebController(interactionRepository, personRepository);
 
@@ -56,10 +58,11 @@ class InteractionWebControllerTest {
         List<Interaction> interactions = Arrays.asList(interaction);
         when(interactionRepository.findAll()).thenReturn(interactions);
 
-        String view = controller.listAll(model);
+        String view = controller.listAll(model, request);
 
         assertThat(view).isEqualTo("interactions");
         verify(model).addAttribute("interactions", interactions);
+        verify(model).addAttribute(eq("cspNonce"), anyString());
     }
 
     // --- SHOW CREATE FORM ---
@@ -68,19 +71,20 @@ class InteractionWebControllerTest {
         when(personRepository.findById(1)).thenReturn(Optional.of(personA));
         when(personRepository.findAll()).thenReturn(Arrays.asList(personA, personB));
 
-        String view = controller.showCreateForm(1, model);
+        String view = controller.showCreateForm(1, model, request);
 
         assertThat(view).isEqualTo("interaction-form");
         verify(model).addAttribute(eq("interaction"), any(Interaction.class));
         verify(model).addAttribute("persons", Arrays.asList(personA, personB));
         verify(model).addAttribute("types", InteractionType.values());
+        verify(model).addAttribute(eq("cspNonce"), anyString());
     }
 
     @Test
     void showCreateForm_InvalidPersonId_ThrowsException() {
         when(personRepository.findById(99)).thenReturn(Optional.empty());
 
-        assertThrows(IllegalArgumentException.class, () -> controller.showCreateForm(99, model));
+        assertThrows(IllegalArgumentException.class, () -> controller.showCreateForm(99, model, request));
     }
 
     // --- CREATE submit ---
@@ -98,19 +102,20 @@ class InteractionWebControllerTest {
         when(interactionRepository.findById(1)).thenReturn(Optional.of(interaction));
         when(personRepository.findAll()).thenReturn(Arrays.asList(personA, personB));
 
-        String view = controller.showEditForm(1, model);
+        String view = controller.showEditForm(1, model, request);
 
         assertThat(view).isEqualTo("interaction-form");
         verify(model).addAttribute("interaction", interaction);
         verify(model).addAttribute("persons", Arrays.asList(personA, personB));
         verify(model).addAttribute("types", InteractionType.values());
+        verify(model).addAttribute(eq("cspNonce"), anyString());
     }
 
     @Test
     void showEditForm_InvalidId_ThrowsException() {
         when(interactionRepository.findById(99)).thenReturn(Optional.empty());
 
-        assertThrows(IllegalArgumentException.class, () -> controller.showEditForm(99, model));
+        assertThrows(IllegalArgumentException.class, () -> controller.showEditForm(99, model, request));
     }
 
     // --- UPDATE submit ---
@@ -141,18 +146,19 @@ class InteractionWebControllerTest {
         when(personRepository.findById(1)).thenReturn(Optional.of(personA));
         when(interactionRepository.findByPersonAIdOrPersonBId(1,1)).thenReturn(interactions);
 
-        String view = controller.listByPerson(1, model);
+        String view = controller.listByPerson(1, model, request);
 
         assertThat(view).isEqualTo("person-interactions");
         verify(model).addAttribute("person", personA);
         verify(model).addAttribute("interactions", interactions);
+        verify(model).addAttribute(eq("cspNonce"), anyString());
     }
 
     @Test
     void listByPerson_InvalidPerson_ThrowsException() {
         when(personRepository.findById(99)).thenReturn(Optional.empty());
 
-        assertThrows(IllegalArgumentException.class, () -> controller.listByPerson(99, model));
+        assertThrows(IllegalArgumentException.class, () -> controller.listByPerson(99, model, request));
     }
 
     @Test
@@ -161,11 +167,12 @@ class InteractionWebControllerTest {
         when(personRepository.findById(1)).thenReturn(Optional.of(personA));
         when(interactionRepository.findByPersonAOrPersonB(personA, personA)).thenReturn(interactions);
 
-        String view = controller.showPersonInteractions(1, model);
+        String view = controller.showPersonInteractions(1, model, request);
 
         assertThat(view).isEqualTo("person-interactions");
         verify(model).addAttribute("person", personA);
         verify(model).addAttribute("interactions", interactions);
         verify(model).addAttribute(eq("interactionCounts"), anyMap());
+        verify(model).addAttribute(eq("cspNonce"), anyString());
     }
 }

@@ -12,7 +12,11 @@ import org.junit.jupiter.api.Test;
 import org.mockito.*;
 import org.springframework.ui.Model;
 
+import jakarta.servlet.http.HttpServletRequest;
+
 import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -31,12 +35,17 @@ class PersonWebControllerTest {
     @Mock
     private Model model;
 
+    @Mock
+    private HttpServletRequest request;
+
     @InjectMocks
     private PersonWebController controller;
 
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
+        // Provide a dummy nonce for all requests
+        when(request.getAttribute("cspNonce")).thenReturn("test-nonce");
     }
 
     // -------------------------------------------------------------
@@ -47,9 +56,10 @@ class PersonWebControllerTest {
         List<Person> persons = List.of(new Person(), new Person());
         when(personRepository.findAll()).thenReturn(persons);
 
-        String result = controller.showAllPersons(model);
+        String result = controller.showAllPersons(model, request);
 
         verify(model).addAttribute("persons", persons);
+        verify(model).addAttribute("cspNonce", "test-nonce");
         assertEquals("persons", result);
     }
 
@@ -62,10 +72,13 @@ class PersonWebControllerTest {
         p.setId(1);
         when(personRepository.findById(1)).thenReturn(Optional.of(p));
 
-        String view = controller.showEditForm(1, model);
+        String view = controller.showEditForm(1, model, request);
 
         verify(model).addAttribute("person", p);
-        verify(model).addAttribute(eq("languageOptions"), eq(Language.values()));
+        verify(model).addAttribute("sexOptions", com.web.Lixiarchos.enums.Sex.values());
+        verify(model).addAttribute("religionOptions", com.web.Lixiarchos.enums.Religion.values());
+        verify(model).addAttribute("languageOptions", Language.values());
+        verify(model).addAttribute("cspNonce", "test-nonce");
         assertEquals("person-form", view);
     }
 
@@ -73,7 +86,7 @@ class PersonWebControllerTest {
     void showEditForm_invalidId_throwsException() {
         when(personRepository.findById(1)).thenReturn(Optional.empty());
         assertThrows(IllegalArgumentException.class,
-                () -> controller.showEditForm(1, model));
+                () -> controller.showEditForm(1, model, request));
     }
 
     // -------------------------------------------------------------
@@ -104,7 +117,7 @@ class PersonWebControllerTest {
     // -------------------------------------------------------------
     @Test
     void showCreateForm_setsDefaultsAndModel() {
-        String view = controller.showCreateForm(model);
+        String view = controller.showCreateForm(model, request);
 
         ArgumentCaptor<Person> captor = ArgumentCaptor.forClass(Person.class);
         verify(model).addAttribute(eq("person"), captor.capture());
@@ -112,6 +125,10 @@ class PersonWebControllerTest {
 
         assertEquals("empty@gmail.com", passed.getEmail());
         assertNotNull(passed.getDateOfBirth());
+        verify(model).addAttribute("sexOptions", com.web.Lixiarchos.enums.Sex.values());
+        verify(model).addAttribute("religionOptions", com.web.Lixiarchos.enums.Religion.values());
+        verify(model).addAttribute("languageOptions", Language.values());
+        verify(model).addAttribute("cspNonce", "test-nonce");
         assertEquals("person-form", view);
     }
 
@@ -163,12 +180,13 @@ class PersonWebControllerTest {
         when(interactionRepository.findByPersonAOrPersonB(main, main))
                 .thenReturn(List.of(interaction));
 
-        String view = controller.showPersonDetails(1, model);
+        String view = controller.showPersonDetails(1, model, request);
 
         verify(model).addAttribute("person", main);
         verify(model).addAttribute(eq("notes"), anyList());
         verify(model).addAttribute(eq("interactions"), anyList());
         verify(model).addAttribute(eq("interactionCounts"), anyMap());
+        verify(model).addAttribute("cspNonce", "test-nonce");
         assertEquals("person-details", view);
     }
 
@@ -199,11 +217,14 @@ class PersonWebControllerTest {
         when(interactionRepository.findByPersonAOrPersonB(main, main))
                 .thenReturn(List.of(i1, i2));
 
-        String view = controller.showPersonInteractions(1, model);
+        String view = controller.showPersonInteractions(1, model, request);
 
         verify(model).addAttribute("person", main);
         verify(model).addAttribute(eq("interactionLabels"), anyList());
         verify(model).addAttribute(eq("interactionValues"), anyList());
+        verify(model).addAttribute("personName", "Main");
+        verify(model).addAttribute("personSurname", "User");
+        verify(model).addAttribute("cspNonce", "test-nonce");
         assertEquals("person-interactions", view);
     }
 }
