@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>All Persons</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .search-input {
+            max-width: 300px;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body class="bg-light p-4">
+<div th:replace="~{navigation-menu-fragment :: banner}"></div>
+<div class="container">
+    <h1 class="mb-4">Persons</h1>
+
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <input type="text" id="searchInput" class="form-control search-input" placeholder="Search by Name or Surname">
+        <a href="/persons/new" class="btn btn-primary">Add New Person</a>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-striped table-bordered align-middle" id="personsTable">
+            <thead class="table-light">
+            <tr>
+                <!--<th>ID</th>-->
+                <th>Name</th>
+                <th>Surname</th>
+                <th>Sex</th>
+                <th>Vocation</th>
+                <th>Address</th>
+                <th>DOB</th>
+                <!--<th>Religion</th>-->
+                <!--<th>Felon</th>-->
+                <!--<th>Origin</th>-->
+                <!--<th>Languages</th>-->
+                <th>Email</th>
+                <th>Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="person : ${persons}">
+                <!--<td th:text="${person.id}">1</td>-->
+                <td th:text="${person.name}">Name</td>
+                <td th:text="${person.surname}">Surname</td>
+                <td th:text="${person.sex}">Sex</td>
+                <td th:text="${person.vocation}">Vocation</td>
+                <td th:text="${person.address}">Address</td>
+                <td th:text="${#dates.format(person.dateOfBirth, 'yyyy-MM-dd')}">DOB</td>
+                <!--<td th:text="${person.religion}">Religion</td>-->
+                <!--<td th:text="${person.isFelon} ? 'Yes' : 'No'">No</td>-->
+                <!--<td th:text="${person.origin}">Origin</td>-->
+                <!--<td th:text="${person.languagesString}"></td>-->
+                <td th:text="${person.email}">Email</td>
+                <td>
+                    <a th:href="@{/persons/details/{id}(id=${person.id})}" class="btn btn-info btn-sm">Details</a>
+                    <a th:href="@{/persons/edit/{id}(id=${person.id})}" class="btn btn-success btn-sm">Edit</a>
+                    <a th:href="@{/persons/delete/{id}(id=${person.id})}" class="btn btn-danger btn-sm"
+                       onclick="return confirm('Are you sure?')">Delete</a>
+                    <a th:href="@{/interactions/person/{personId}(personId=${person.id})}"
+                       class="btn btn-warning btn-sm mt-1">Interactions</a>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    const searchInput = document.getElementById('searchInput');
+    const table = document.getElementById('personsTable');
+    const rows = table.getElementsByTagName('tbody')[0].getElementsByTagName('tr');
+
+    searchInput.addEventListener('keyup', function () {
+        const filter = searchInput.value.toLowerCase();
+        for (let i = 0; i < rows.length; i++) {
+            const nameCell = rows[i].getElementsByTagName('td')[0].textContent.toLowerCase();
+            const surnameCell = rows[i].getElementsByTagName('td')[1].textContent.toLowerCase();
+            if (nameCell.includes(filter) || surnameCell.includes(filter)) {
+                rows[i].style.display = '';
+            } else {
+                rows[i].style.display = 'none';
+            }
+        }
+    });
+</script>
+</body>
+</html>

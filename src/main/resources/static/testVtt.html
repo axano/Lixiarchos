@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Voice to Text Form (Append Mode)</title>
+</head>
+<body>
+<h2>Voice to Text Form (Append Mode)</h2>
+<form id="myForm">
+    <label for="name">Name:</label>
+    <input type="text" id="name" name="name">
+    <button type="submit">Submit</button>
+</form>
+
+<button id="startBtn">Start Voice Input</button>
+<button id="stopBtn">Stop</button>
+
+<script>
+    const startBtn = document.getElementById('startBtn');
+    const stopBtn = document.getElementById('stopBtn');
+    const nameInput = document.getElementById('name');
+
+    // Check for browser support
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+    if (SpeechRecognition) {
+      const recognition = new SpeechRecognition();
+      recognition.continuous = true; // keep listening
+      recognition.interimResults = true;
+      recognition.lang = 'en-US';
+
+      recognition.onresult = (event) => {
+        let transcript = '';
+        for (let i = event.resultIndex; i < event.results.length; ++i) {
+          transcript += event.results[i][0].transcript;
+        }
+        // Append new transcript to existing input value
+        nameInput.value += transcript + ' ';
+      };
+
+      startBtn.onclick = () => recognition.start();
+      stopBtn.onclick = () => recognition.stop();
+    } else {
+      alert('Sorry, your browser does not support Speech Recognition.');
+    }
+</script>
+</body>
+</html>

@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Person Interactions</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <!-- qTip2 CSS -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/qtip2/3.0.3/jquery.qtip.min.css">
+
+  <style>
+    #cy {
+        width: 100%;
+        height: 500px;
+        border: 1px solid #ccc;
+    }
+  </style>
+</head>
+<body class="bg-light p-4">
+<div th:replace="~{navigation-menu-fragment :: banner}"></div>
+<div class="container">
+  <h1 class="mb-4">
+    Interactions for <span th:text="${person.name + ' ' + person.surname}"></span>
+  </h1>
+
+  <!-- Interaction Graph -->
+  <div class="card shadow-sm mb-4">
+    <div class="card-body">
+      <h4 class="mb-3">Interaction Network</h4>
+      <div id="cy"></div>
+    </div>
+  </div>
+  <a th:href="@{/interactions/new(personId=${person.id})}"  class="btn btn-primary mb-3">Add Interaction</a>
+
+  <!-- Table of interactions -->
+  <div class="table-responsive mb-4">
+    <table class="table table-bordered table-striped align-middle">
+      <thead class="table-light">
+      <tr>
+        <th>ID</th>
+        <th>Type</th>
+        <th>Content</th>
+        <th>Date</th>
+        <th>Other Person</th>
+        <th>Actions</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr th:each="i : ${interactions}">
+        <td th:text="${i.id}"></td>
+        <td th:text="${i.interactionType}"></td>
+        <td th:text="${i.content}"></td>
+        <td th:text="${#dates.format(i.dateHappened, 'yyyy-MM-dd')}"></td>
+        <td th:text="${i.personA.id eq person.id ? i.personB.name + ' ' + i.personB.surname : i.personA.name + ' ' + i.personA.surname}"></td>
+        <td>
+          <a th:href="@{/interactions/edit/{id}(id=${i.id})}" class="btn btn-success btn-sm">Edit</a>
+          <a th:href="@{/interactions/delete/{id}(id=${i.id})}"
+             onclick="return confirm('Delete this interaction?')"
+             class="btn btn-danger btn-sm">Delete</a>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <a th:href="@{/persons/details/{id}(id=${person.id})}" class="btn btn-secondary">Back to Person</a>
+</div>
+
+<!-- JS Libraries -->
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qtip2/3.0.3/jquery.qtip.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/cytoscape/3.25.0/cytoscape.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/cytoscape-qtip@2.7.0/cytoscape-qtip.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+<script th:inline="javascript">
+  /*<![CDATA[*/
+  var elements = [];
+  var centralId = 'p' + [[${person.id}]];
+  elements.push({ data: { id: centralId, label: '[[${person.name}]] [[${person.surname}]]' } });
+
+  var typeColorMap = {
+      'NEUTRAL': '#888888',
+      'HOSTILE': '#ff0000',
+      'FRIENDLY': '#00aa00',
+      'SEXUAL': '#ff69b4'
+  };
+
+  [[${interactions}]].forEach(function(i) {
+      var otherId = i.personA.id === [[${person.id}]] ? 'p' + i.personB.id : 'p' + i.personA.id;
+      var otherLabel = i.personA.id === [[${person.id}]] ? i.personB.name + ' ' + i.personB.surname : i.personA.name + ' ' + i.personA.surname;
+
+      if (!elements.some(e => e.data.id === otherId)) {
+          elements.push({ data: { id: otherId, label: otherLabel } });
+      }
+
+      var edgeColor = typeColorMap[i.interactionType] || '#888888';
+      var edgeContent = "<strong>Type:</strong> " + i.interactionType + "<br>" +
+                        "<strong>Date:</strong> " + i.dateHappened + "<br>" +
+                        "<strong>Content:</strong> " + i.content;
+
+      elements.push({
+          data: { source: centralId, target: otherId, content: edgeContent },
+          style: { 'line-color': edgeColor }
+      });
+  });
+
+  var cy = cytoscape({
+      container: document.getElementById('cy'),
+      elements: elements,
+      style: [
+          {
+              selector: 'node',
+              style: {
+                  'label': 'data(label)',
+                  'background-color': '#1f77b4',
+                  'color': '#fff',
+                  'text-valign': 'center',
+                  'text-halign': 'center',
+                  'width': '70px',
+                  'height': '70px',
+                  'font-size': '8px'
+              }
+          },
+          {
+              selector: 'edge',
+              style: {
+                  'width': 3,
+                  'line-color': 'data(line-color)',
+                  'target-arrow-shape': 'none',
+                  'curve-style': 'bezier'
+              }
+          }
+      ],
+      layout: { name: 'cose', animate: true }
+  });
+
+  // Edge tooltips that follow cursor
+  cy.edges().forEach(function(edge) {
+      edge.qtip({
+          content: edge.data('content'),
+          show: { event: 'mouseover' },
+          hide: { event: 'mouseout' },
+          position: {
+              target: 'mouse',   // follow the cursor
+              adjust: { mouse: true }  // track cursor movement
+          },
+          style: {
+              classes: 'qtip-bootstrap',
+              tip: { width: 10, height: 10 }
+          }
+      });
+  });
+  /*]]>*/
+</script>
+</body>
+</html>

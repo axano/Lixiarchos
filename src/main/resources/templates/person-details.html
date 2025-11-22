@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Person Details</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light p-4">
+<div th:replace="~{navigation-menu-fragment :: banner}"></div>
+<div class="container">
+    <h1 class="mb-4">Person Details</h1>
+    <div class="card shadow-sm mb-4">
+        <div class="card-body">
+            <h4 th:text="${person.name} + ' ' + ${person.surname}">Full Name</h4>
+            <div class="row">
+                <div class="col-md-6">
+                    <p><strong>Sex:</strong> <span th:text="${person.sex}"></span></p>
+                    <p><strong>Vocation:</strong> <span th:text="${person.vocation}"></span></p>
+                    <p><strong>Address:</strong> <span th:text="${person.address}"></span></p>
+                    <p><strong>Date of Birth:</strong> <span th:text="${#dates.format(person.dateOfBirth, 'yyyy-MM-dd')}"></span></p>
+                    <p><strong>Religion:</strong> <span th:text="${person.religion}"></span></p>
+                </div>
+                <div class="col-md-6">
+                    <p><strong>Is Felon:</strong> <span th:text="${person.isFelon} ? 'Yes' : 'No'"></span></p>
+                    <p><strong>Origin:</strong> <span th:text="${person.origin}"></span></p>
+                    <p><strong>Languages:</strong> <span th:text="${person.languagesString}"></span></p>
+                    <p><strong>Email:</strong> <span th:text="${person.email}"></span></p>
+                    <p><strong>Telephone:</strong> <span th:text="${person.telephone}"></span></p>
+                </div>
+            </div>
+            <div class="mt-3">
+                <a th:href="@{/persons/edit/{id}(id=${person.id})}" class="btn btn-success">Edit Person</a>
+                <a th:href="@{/notes/new/{personId}(personId=${person.id})}" class="btn btn-primary">Add Note</a>
+                <a th:href="@{/interactions/person/{personId}(personId=${person.id})}" class="btn btn-warning">Interactions</a>
+                <a href="/persons" class="btn btn-secondary">Back to List</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notes Section -->
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <h4 class="mb-3">Notes</h4>
+            <div th:if="${#lists.isEmpty(notes)}">
+                <p>No notes available for this person.</p>
+            </div>
+            <div th:if="${!#lists.isEmpty(notes)}" class="table-responsive">
+                <table class="table table-striped table-bordered">
+                    <thead class="table-light">
+                    <tr>
+                        <th>ID</th>
+                        <th>Content</th>
+                        <th>Date Registered</th>
+                        <th>Actions</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="note : ${notes}">
+                        <td th:text="${note.id}">1</td>
+                        <td th:text="${note.content}">Sample note</td>
+                        <td th:text="${#dates.format(note.dateRegistered, 'yyyy-MM-dd')}">2025-01-01</td>
+                        <td>
+                            <a th:href="@{/notes/edit/{id}(id=${note.id})}" class="btn btn-success btn-sm">Edit</a>
+                            <a th:href="@{/notes/delete/{id}(id=${note.id})}" class="btn btn-danger btn-sm"
+                               onclick="return confirm('Are you sure?')">Delete</a>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

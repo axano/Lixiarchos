@@ -1,0 +1,32 @@
+<!-- templates/navigation-menu-fragment.html -->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+</head>
+<body>
+<!-- Banner fragment -->
+<div th:fragment="banner">
+    <div class="bg-primary text-white py-3 mb-4">
+        <div class="container d-flex justify-content-between align-items-center">
+            <!-- Banner Title -->
+            <h1 class="mb-0">Lixiarchos</h1>
+
+            <!-- Navigation Buttons aligned to the right -->
+            <div class="btn-group" role="group">
+                <a href="/persons" class="btn btn-light">Persons</a>
+                <a href="/interactions" class="btn btn-light">Interactions</a>
+                <!-- Admin button only visible to ADMIN users -->
+                <a href="/admin" class="btn btn-warning" sec:authorize="hasRole('ADMIN')">Admin Panel</a>
+                <a href="/logout" class="btn btn-danger">Logout</a>
+
+
+
+            </div>
+        </div>
+    </div>
+    </div>
+
+</div>
+</body>
+</html>
