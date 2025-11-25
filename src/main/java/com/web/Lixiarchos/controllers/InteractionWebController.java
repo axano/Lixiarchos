@@ -30,7 +30,7 @@ public class InteractionWebController {
     public String listAll(Model model, HttpServletRequest request) {
         model.addAttribute("interactions", interactionRepository.findAll());
         model.addAttribute("cspNonce", getOrCreateNonce(request));
-        return "interactions"; // interactions.html
+        return "interactions";
     }
 
     // CREATE form
@@ -102,7 +102,7 @@ public class InteractionWebController {
         model.addAttribute("interactions", interactionRepository.findByPersonAIdOrPersonBId(personId, personId));
         model.addAttribute("cspNonce", getOrCreateNonce(request));
 
-        return "person-interactions"; // person-interactions.html
+        return "person-interactions";
     }
 
     // SHOW interactions with "other person" counts (for charts)

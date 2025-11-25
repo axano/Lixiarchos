@@ -48,13 +48,13 @@
                 <td th:text="${person.sex}">Sex</td>
                 <td th:text="${person.vocation}">Vocation</td>
                 <td th:text="${person.address}">Address</td>
-                <td th:text="${#dates.format(person.dateOfBirth, 'yyyy-MM-dd')}">DOB</td>
+                <td th:text="${#temporals.format(person.dateOfBirth, 'yyyy-MM-dd')}">DOB</td>
                 <td th:text="${person.email}">Email</td>
-                <td>
+                <td class="d-flex flex-wrap gap-1">
                     <a th:href="@{/persons/details/{id}(id=${person.id})}" class="btn btn-info btn-sm">Details</a>
                     <a th:href="@{/persons/edit/{id}(id=${person.id})}" class="btn btn-success btn-sm">Edit</a>
                     <a href="#" th:attr="data-id=${person.id}" class="btn btn-danger btn-sm deleteBtn">Delete</a>
-                    <a th:href="@{/interactions/person/{personId}(personId=${person.id})}" class="btn btn-warning btn-sm mt-1">Interactions</a>
+                    <a th:href="@{/interactions/person/{personId}(personId=${person.id})}" class="btn btn-warning btn-sm">Interactions</a>
                 </td>
             </tr>
             </tbody>
@@ -69,24 +69,23 @@
 <script th:attr="nonce=${cspNonce}">
     const searchInput = document.getElementById('searchInput');
     const table = document.getElementById('personsTable');
-    const rows = table.getElementsByTagName('tbody')[0].getElementsByTagName('tr');
+    const rows = table.tBodies[0].rows;
 
     searchInput.addEventListener('keyup', function () {
         const filter = searchInput.value.toLowerCase();
-        for (let i = 0; i < rows.length; i++) {
-            const nameCell = rows[i].getElementsByTagName('td')[0].textContent.toLowerCase();
-            const surnameCell = rows[i].getElementsByTagName('td')[1].textContent.toLowerCase();
-            rows[i].style.display = (nameCell.includes(filter) || surnameCell.includes(filter)) ? '' : 'none';
+        for (let row of rows) {
+            const nameCell = row.cells[0].textContent.toLowerCase();
+            const surnameCell = row.cells[1].textContent.toLowerCase();
+            row.style.display = (nameCell.includes(filter) || surnameCell.includes(filter)) ? '' : 'none';
         }
     });
 
     // Delete buttons
-    const deleteButtons = document.getElementsByClassName('deleteBtn');
-    Array.from(deleteButtons).forEach(btn => {
-        btn.addEventListener('click', function(event) {
-            const personId = this.getAttribute('data-id');
+    Array.from(document.getElementsByClassName('deleteBtn')).forEach(btn => {
+        btn.addEventListener('click', function() {
+            const personId = this.dataset.id;
             if (confirm('Are you sure?')) {
-                window.location.href = '/persons/delete/' + personId;
+                window.location.href = `/persons/delete/${personId}`;
             }
         });
     });

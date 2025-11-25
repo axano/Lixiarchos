@@ -11,13 +11,17 @@
     <h1 class="mb-4">Person Details</h1>
     <div class="card shadow-sm mb-4">
         <div class="card-body">
+            <!-- Fixed full name concatenation -->
             <h4 th:text="${person.name} + ' ' + ${person.surname}">Full Name</h4>
             <div class="row">
                 <div class="col-md-6">
                     <p><strong>Sex:</strong> <span th:text="${person.sex}"></span></p>
                     <p><strong>Vocation:</strong> <span th:text="${person.vocation}"></span></p>
                     <p><strong>Address:</strong> <span th:text="${person.address}"></span></p>
-                    <p><strong>Date of Birth:</strong> <span th:text="${#dates.format(person.dateOfBirth, 'yyyy-MM-dd')}"></span></p>
+                    <!-- Fixed LocalDate formatting -->
+                    <p><strong>Date of Birth:</strong>
+                        <span th:text="${#temporals.format(person.dateOfBirth, 'yyyy-MM-dd')}"></span>
+                    </p>
                     <p><strong>Religion:</strong> <span th:text="${person.religion}"></span></p>
                 </div>
                 <div class="col-md-6">
@@ -58,7 +62,8 @@
                     <tr th:each="note : ${notes}">
                         <td th:text="${note.id}">1</td>
                         <td th:text="${note.content}">Sample note</td>
-                        <td th:text="${#dates.format(note.dateRegistered, 'yyyy-MM-dd')}">2025-01-01</td>
+                        <!-- Fixed LocalDate or Date formatting -->
+                        <td th:text="${#temporals.format(note.dateRegistered, 'yyyy-MM-dd')}">2025-01-01</td>
                         <td>
                             <a th:href="@{/notes/edit/{id}(id=${note.id})}" class="btn btn-success btn-sm">Edit</a>
                             <a th:href="@{/notes/delete/{id}(id=${note.id})}" class="btn btn-danger btn-sm"

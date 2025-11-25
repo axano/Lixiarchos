@@ -5,7 +5,7 @@
     <title>All Interactions</title>
 
     <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link th:attr="nonce=${cspNonce}" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 
     <!-- Inline styles with nonce -->
     <style th:attr="nonce=${cspNonce}">
@@ -59,11 +59,10 @@
 </div>
 
 <!-- Bootstrap JS -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script th:attr="nonce=${cspNonce}" src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
 <!-- Inline scripts with nonce -->
 <script th:attr="nonce=${cspNonce}">
-    // Attach confirm dialogs to delete buttons
     document.querySelectorAll('.delete-btn').forEach(btn => {
         btn.addEventListener('click', function(e) {
             if (!confirm('Delete this interaction?')) {

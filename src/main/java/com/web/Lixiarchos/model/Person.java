@@ -9,6 +9,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.*;
 import org.springframework.format.annotation.DateTimeFormat;
 
+import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -29,7 +30,8 @@ public class Person {
     private String address;
     @JsonFormat(pattern = "yyyy-MM-dd")
     @DateTimeFormat(pattern = "yyyy-MM-dd")
-    private Date dateOfBirth;
+    private LocalDate dateOfBirth;
+    @Enumerated(EnumType.STRING)
     private Religion religion;
     @JsonProperty("isFelon")
     @Column(name = "is_felon", nullable = false)
@@ -47,7 +49,7 @@ public class Person {
     private String telephone;
 
 
-    public Person(Integer id, String name, String surname, Sex sex, String vocation, String address, Date dateOfBirth, Religion religion, Boolean isFelon, String origin, Set<Language> languages, String email, String telephone ){
+    public Person(Integer id, String name, String surname, Sex sex, String vocation, String address, LocalDate dateOfBirth, Religion religion, Boolean isFelon, String origin, Set<Language> languages, String email, String telephone ){
         this.id = id;
         this.name = name;
         this.surname = surname;
@@ -72,7 +74,7 @@ public class Person {
         this.sex = Sex.MALE;
         this.vocation = "test";
         this.address = "test";
-        this.dateOfBirth = new Date();
+        this.dateOfBirth = LocalDate.of(1000,1,1);
         this.religion = Religion.CHRISTIAN_ORTHODOX;
         this.isFelon = false;
         this.origin = "test";
@@ -132,11 +134,11 @@ public class Person {
         this.address = address;
     }
 
-    public Date getDateOfBirth() {
+    public LocalDate  getDateOfBirth() {
         return dateOfBirth;
     }
 
-    public void setDateOfBirth(Date dateOfBirth) {
+    public void setDateOfBirth(LocalDate  dateOfBirth) {
         this.dateOfBirth = dateOfBirth;
     }
 

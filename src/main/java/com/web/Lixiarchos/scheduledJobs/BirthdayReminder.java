@@ -8,9 +8,6 @@ import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
 import java.time.MonthDay;
-import java.time.ZoneId;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 
 import static com.web.Lixiarchos.services.EmailService.sendTextEmail;
@@ -28,17 +25,17 @@ public class BirthdayReminder {
         List<Person> persons = personRepository.findAll();
 
         LocalDate today = LocalDate.now();
+        MonthDay todayMonthDay = MonthDay.from(today);
 
         for (Person person : persons) {
-            Calendar cal = Calendar.getInstance();
 
-            Date dob = person.getDateOfBirth();
-            cal.setTime(dob);
-            if(  cal.get(Calendar.MONTH) == Calendar.JANUARY && cal.get(Calendar.DAY_OF_MONTH) == 1) continue;
+            LocalDate dob = person.getDateOfBirth();
+            if (dob == null) continue; // skip if date of birth is null
 
-            LocalDate birthDate = dob.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-            MonthDay birthday = MonthDay.from(birthDate);
-            MonthDay todayMonthDay = MonthDay.from(today);
+            // Skip placeholder birthdays like 1000-01-01
+            if (dob.getYear() <= 1000) continue;
+
+            MonthDay birthday = MonthDay.from(dob);
 
             // Check if the birthday is today
             if (birthday.equals(todayMonthDay)) {
@@ -48,7 +45,7 @@ public class BirthdayReminder {
                 try {
                     sendTextEmail("perselis.e@gmail.com", subject, body);
                 } catch (Exception e) {
-                    System.err.println("Failed to send email " + e.getMessage());
+                    System.err.println("Failed to send email: " + e.getMessage());
                 }
             }
         }

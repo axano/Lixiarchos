@@ -70,9 +70,11 @@ public class SecurityConfig {
 
                 // Set the CSP header
                 String csp = "default-src 'self'; " +
-                        "script-src 'self' 'nonce-" + nonce + "' https://cdn.jsdelivr.net; " +
-                        "style-src 'self' 'nonce-" + nonce + "' https://cdn.jsdelivr.net; " +
+                        "script-src 'self' 'nonce-" + nonce + "' https://cdn.jsdelivr.net https://code.jquery.com https://cdnjs.cloudflare.com; " +
+                        "style-src 'self' 'nonce-" + nonce + "' 'unsafe-hashes' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; " +
+                        "style-src-elem 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; " +
                         "font-src 'self' https://cdn.jsdelivr.net;";
+
                 response.setHeader("Content-Security-Policy", csp);
 
                 filterChain.doFilter(request, response);

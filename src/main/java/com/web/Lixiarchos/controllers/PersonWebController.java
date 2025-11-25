@@ -12,6 +12,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -74,7 +75,7 @@ public class PersonWebController {
         Person person = new Person();
         person.setEmail("empty@gmail.com");
         person.setTelephone("+32 000 00 00 00");
-        person.setDateOfBirth(new Date("01/01/1000"));
+        person.setDateOfBirth(LocalDate.of(1000, 1, 1));
         model.addAttribute("person", person);
         model.addAttribute("sexOptions", com.web.Lixiarchos.enums.Sex.values());
         model.addAttribute("religionOptions", com.web.Lixiarchos.enums.Religion.values());

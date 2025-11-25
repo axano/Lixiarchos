@@ -1,6 +1,8 @@
 package com.web.Lixiarchos.model;
 
 import com.web.Lixiarchos.enums.Language;
+import com.web.Lixiarchos.enums.Sex;
+import com.web.Lixiarchos.enums.Religion;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -9,6 +11,7 @@ import jakarta.validation.Validator;
 import jakarta.validation.ValidatorFactory;
 import jakarta.validation.ConstraintViolation;
 
+import java.time.LocalDate;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -51,7 +54,7 @@ class PersonValidationTest {
     void testLanguagesInvalidIgnored() {
         Person person = createValidPerson();
 
-        // Mix valid and invalid
+        // Mix valid and invalid values
         String input = "ENGLISH,INVALID,DUTCH,UNKNOWN";
         person.setLanguagesString(input);
 
@@ -74,7 +77,11 @@ class PersonValidationTest {
         person.setEmail("test@example.com");
         person.setTelephone("+1234567890");
         person.setLanguagesString("ENGLISH"); // initial valid language
-        person.setDateOfBirth(new java.util.Date());
+        person.setDateOfBirth(LocalDate.of(1990, 1, 1)); // ✅ LocalDate now
+        person.setSex(Sex.MALE);
+        person.setReligion(Religion.CHRISTIAN_ORTHODOX);
+        person.setIsFelon(false);
+        person.setAddress("123 Test St");
         return person;
     }
 }
