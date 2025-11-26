@@ -44,6 +44,13 @@
 			<groupId>com.fasterxml.jackson.core</groupId>
 			<artifactId>jackson-databind</artifactId>
 		</dependency>
+
+		<dependency>
+			<groupId>com.github.ben-manes.caffeine</groupId>
+			<artifactId>caffeine</artifactId>
+			<version>3.1.8</version> <!-- or latest -->
+		</dependency>
+
 		<!-- Core web + Jackson support (includes ObjectMapper) -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>

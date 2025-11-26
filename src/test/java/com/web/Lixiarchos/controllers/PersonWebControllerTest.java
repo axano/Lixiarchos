@@ -4,6 +4,7 @@ import com.web.Lixiarchos.enums.Language;
 import com.web.Lixiarchos.model.Interaction;
 import com.web.Lixiarchos.model.Note;
 import com.web.Lixiarchos.model.Person;
+import com.web.Lixiarchos.model.exceptions.PersonNotFoundException;
 import com.web.Lixiarchos.repositories.InteractionRepository;
 import com.web.Lixiarchos.repositories.NoteRepository;
 import com.web.Lixiarchos.repositories.PersonRepository;
@@ -85,7 +86,7 @@ class PersonWebControllerTest {
     @Test
     void showEditForm_invalidId_throwsException() {
         when(personRepository.findById(1)).thenReturn(Optional.empty());
-        assertThrows(IllegalArgumentException.class,
+        assertThrows(PersonNotFoundException.class,
                 () -> controller.showEditForm(1, model, request));
     }
 

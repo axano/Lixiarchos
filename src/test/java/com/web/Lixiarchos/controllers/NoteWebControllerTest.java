@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.*;
 import org.springframework.ui.Model;
 
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.Optional;
 
@@ -155,7 +156,7 @@ class NoteWebControllerTest {
 
         Note updated = new Note();
         updated.setContent("new content");
-        updated.setDateRegistered(new Date());
+        updated.setDateRegistered((LocalDate.of(1000, 1, 1)));
 
         when(noteRepository.findById(1)).thenReturn(Optional.of(existing));
         when(personRepository.findById(99)).thenReturn(Optional.of(p));

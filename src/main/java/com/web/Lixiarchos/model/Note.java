@@ -7,6 +7,7 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PositiveOrZero;
 import org.springframework.format.annotation.DateTimeFormat;
 
+import java.time.LocalDate;
 import java.util.Date;
 
 @Entity
@@ -28,7 +29,7 @@ public class Note {
 
     @JsonFormat(pattern = "yyyy-MM-dd")
     @DateTimeFormat(pattern="yyyy-MM-dd")
-    private Date dateRegistered;
+    private LocalDate dateRegistered;
 
     // Getters and setters
     public Integer getId() { return id; }
@@ -40,6 +41,6 @@ public class Note {
     public String getContent() { return content; }
     public void setContent(String content) { this.content = content; }
 
-    public Date getDateRegistered() { return dateRegistered; }
-    public void setDateRegistered(Date dateRegistered) { this.dateRegistered = dateRegistered; }
+    public LocalDate  getDateRegistered() { return dateRegistered; }
+    public void setDateRegistered(LocalDate  dateRegistered) { this.dateRegistered = dateRegistered; }
 }

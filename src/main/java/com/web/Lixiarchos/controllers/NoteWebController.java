@@ -9,6 +9,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.Date;
 
 @Controller
@@ -31,7 +32,8 @@ public class NoteWebController {
 
         Note note = new Note();
         note.setPerson(person);
-        note.setDateRegistered(new Date());
+
+        note.setDateRegistered((LocalDate.now()));
 
         model.addAttribute("note", note);
         model.addAttribute("personName", person.getName() + " " + person.getSurname());

@@ -4,6 +4,7 @@ import com.web.Lixiarchos.enums.Language;
 import com.web.Lixiarchos.model.Interaction;
 import com.web.Lixiarchos.model.Note;
 import com.web.Lixiarchos.model.Person;
+import com.web.Lixiarchos.model.exceptions.PersonNotFoundException;
 import com.web.Lixiarchos.repositories.InteractionRepository;
 import com.web.Lixiarchos.repositories.NoteRepository;
 import com.web.Lixiarchos.repositories.PersonRepository;
@@ -52,7 +53,7 @@ public class PersonWebController {
     @GetMapping("/edit/{id}")
     public String showEditForm(@PathVariable Integer id, Model model, HttpServletRequest request) {
         Person person = personRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Invalid person ID"));
+                .orElseThrow(PersonNotFoundException::new);
         model.addAttribute("person", person);
         model.addAttribute("sexOptions", com.web.Lixiarchos.enums.Sex.values());
         model.addAttribute("religionOptions", com.web.Lixiarchos.enums.Religion.values());
@@ -100,7 +101,7 @@ public class PersonWebController {
     @GetMapping("/details/{id}")
     public String showPersonDetails(@PathVariable Integer id, Model model, HttpServletRequest request) {
         Person person = personRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Invalid person ID: " + id));
+                .orElseThrow(PersonNotFoundException::new);
         model.addAttribute("person", person);
 
         List<Note> notes = noteRepository.findByPersonId(id);
@@ -125,7 +126,7 @@ public class PersonWebController {
     @GetMapping("/interactions/{personId}")
     public String showPersonInteractions(@PathVariable Integer personId, Model model, HttpServletRequest request) {
         Person person = personRepository.findById(personId)
-                .orElseThrow(() -> new IllegalArgumentException("Invalid person ID"));
+                .orElseThrow(PersonNotFoundException::new);
 
         List<Interaction> interactions = interactionRepository.findByPersonAOrPersonB(person, person);
 
