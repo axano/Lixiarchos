@@ -90,9 +90,11 @@ class InteractionWebControllerTest {
     // --- CREATE submit ---
     @Test
     void create_SavesInteractionAndRedirects() {
+        when(interactionRepository.save(interaction)).thenReturn(interaction);
+
         String view = controller.create(interaction);
 
-        assertThat(view).isEqualTo("redirect:/interactions");
+        assertThat(view).isEqualTo("redirect:/persons/details/1");
         verify(interactionRepository).save(interaction);
     }
 
@@ -121,21 +123,26 @@ class InteractionWebControllerTest {
     // --- UPDATE submit ---
     @Test
     void update_SavesInteractionAndRedirects() {
+        when(interactionRepository.save(interaction)).thenReturn(interaction);
+
         String view = controller.update(1, interaction);
 
-        assertThat(view).isEqualTo("redirect:/interactions");
+        assertThat(view).isEqualTo("redirect:/persons/details/1");
 
         ArgumentCaptor<Interaction> captor = ArgumentCaptor.forClass(Interaction.class);
         verify(interactionRepository).save(captor.capture());
+
         assertThat(captor.getValue().getId()).isEqualTo(1);
     }
 
     // --- DELETE ---
     @Test
     void delete_DeletesInteractionAndRedirects() {
+        when(interactionRepository.findById(1)).thenReturn(Optional.of(interaction));
+
         String view = controller.delete(1);
 
-        assertThat(view).isEqualTo("redirect:/interactions");
+        assertThat(view).isEqualTo("redirect:/persons/details/1");
         verify(interactionRepository).deleteById(1);
     }
 

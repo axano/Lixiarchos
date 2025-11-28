@@ -13,6 +13,10 @@
             max-height: 70vh;
             overflow: auto;
         }
+         .search-input {
+            max-width: 300px;
+            margin-bottom: 10px;
+        }
     </style>
 </head>
 <body class="bg-light p-4">
@@ -21,13 +25,16 @@
 <div class="container">
     <h1 class="mb-4">All Interactions</h1>
 
-    <a href="/interactions/new" class="btn btn-primary mb-3">Add New Interaction</a>
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <input type="text" id="searchInput" class="form-control search-input" placeholder="Search by Person A or Person B">
+        <a href="/interactions/new" class="btn btn-primary">Add New Interaction</a>
+    </div>
+
 
     <div class="table-responsive">
-        <table class="table table-bordered table-striped align-middle">
+        <table class="table table-bordered table-striped align-middle" id="interactionsTable">
             <thead class="table-light">
             <tr>
-                <th>ID</th>
                 <th>Type</th>
                 <th>Content</th>
                 <th>Date Happened</th>
@@ -38,7 +45,6 @@
             </thead>
             <tbody>
             <tr th:each="i : ${interactions}">
-                <td th:text="${i.id}"></td>
                 <td th:text="${i.interactionType}"></td>
                 <td th:text="${i.content}"></td>
                 <td th:text="${#dates.format(i.dateHappened, 'yyyy-MM-dd')}"></td>
@@ -63,6 +69,20 @@
 
 <!-- Inline scripts with nonce -->
 <script th:attr="nonce=${cspNonce}">
+    const searchInput = document.getElementById('searchInput');
+    const table = document.getElementById('interactionsTable');
+    const rows = table.tBodies[0].rows;
+
+    searchInput.addEventListener('keyup', function () {
+        const filter = searchInput.value.toLowerCase();
+        for (let row of rows) {
+            const personA = row.cells[3].textContent.toLowerCase();
+            const personB = row.cells[4].textContent.toLowerCase();
+            row.style.display = (personA.includes(filter) || personB.includes(filter)) ? '' : 'none';
+        }
+    });
+
+
     document.querySelectorAll('.delete-btn').forEach(btn => {
         btn.addEventListener('click', function(e) {
             if (!confirm('Delete this interaction?')) {

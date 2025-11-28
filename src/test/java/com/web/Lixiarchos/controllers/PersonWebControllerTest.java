@@ -151,7 +151,9 @@ class PersonWebControllerTest {
     // -------------------------------------------------------------
     @Test
     void deletePerson_deletesAndRedirects() {
-        String redirect = controller.deletePerson(10);
+        Model model = mock(Model.class);
+        HttpServletRequest request = mock(HttpServletRequest.class);
+        String redirect = controller.deletePerson(10, model, request);
 
         verify(personRepository).deleteById(10);
         assertEquals("redirect:/persons", redirect);

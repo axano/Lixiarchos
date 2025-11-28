@@ -61,6 +61,5 @@ To run Lixiarchos as a service on a Unix-based system, you can create a systemd 
 If restoring a backup, pulled through the admin panel, and you are moving from Mysql to MariaDB or vice versa, you may need to adjust the sql file by replacing all occurrences of utf8mb4_0900_ai_ci with utf8mb4_unicode_520_ci
 
 ## TODO 
-- Improve email alerting system
-- Introduce tests
-- Create OSINT dashboard
+
+- dockerize the application for easier deployment

@@ -9,6 +9,7 @@ import com.web.Lixiarchos.repositories.InteractionRepository;
 import com.web.Lixiarchos.repositories.NoteRepository;
 import com.web.Lixiarchos.repositories.PersonRepository;
 import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -93,8 +94,17 @@ public class PersonWebController {
     }
 
     @GetMapping("/delete/{id}")
-    public String deletePerson(@PathVariable Integer id) {
-        personRepository.deleteById(id);
+    public String deletePerson(@PathVariable Integer id, Model model, HttpServletRequest request) {
+        try {
+            personRepository.deleteById(id);
+        } catch (DataIntegrityViolationException e) {
+            model.addAttribute("errorMessage",
+                    "Cannot delete this person because they have related interactions or notes.");
+            model.addAttribute("persons", personRepository.findAll());
+            model.addAttribute("cspNonce", generateCspNonce(request));
+            return "persons"; // reload the persons page with the error message
+        }
+
         return "redirect:/persons";
     }
 
