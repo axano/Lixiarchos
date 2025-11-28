@@ -30,7 +30,8 @@ build/
 !**/src/test/**/build/
 
 *executeSecurityScans.bat
-
+*deployToProd.bat
+*deployToTest.bat
 ### Spring Boot ###
 # Ignore all Spring Boot property files
 *application.properties

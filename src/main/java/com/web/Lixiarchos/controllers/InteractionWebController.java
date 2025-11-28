@@ -51,8 +51,7 @@ public class InteractionWebController {
         model.addAttribute("interaction", interaction);
         model.addAttribute("persons", personRepository.findAll());
         model.addAttribute("types", InteractionType.values());
-        model.addAttribute("cspNonce", getOrCreateNonce(request));
-
+        model.addAttribute("cspNonce", getOrCreateNonce(request)); // CSP nonce added
         return "interaction-form";
     }
 
@@ -60,7 +59,8 @@ public class InteractionWebController {
     @PostMapping("")
     public String create(@ModelAttribute Interaction interaction) {
         interactionRepository.save(interaction);
-        return "redirect:/interactions";
+        Integer personId = interaction.getPersonA() != null ? interaction.getPersonA().getId() : null;
+        return "redirect:/persons/details/" + personId;
     }
 
     // EDIT form
@@ -72,8 +72,7 @@ public class InteractionWebController {
         model.addAttribute("interaction", interaction);
         model.addAttribute("persons", personRepository.findAll());
         model.addAttribute("types", InteractionType.values());
-        model.addAttribute("cspNonce", getOrCreateNonce(request));
-
+        model.addAttribute("cspNonce", getOrCreateNonce(request)); // CSP nonce added
         return "interaction-form";
     }
 
@@ -82,14 +81,18 @@ public class InteractionWebController {
     public String update(@PathVariable Integer id, @ModelAttribute Interaction interaction) {
         interaction.setId(id);
         interactionRepository.save(interaction);
-        return "redirect:/interactions";
+        Integer personId = interaction.getPersonA() != null ? interaction.getPersonA().getId() : null;
+        return "redirect:/persons/details/" + personId;
     }
 
     // DELETE
     @GetMapping("/delete/{id}")
     public String delete(@PathVariable Integer id) {
+        Interaction interaction = interactionRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Invalid interaction ID"));
+        Integer personId = interaction.getPersonA() != null ? interaction.getPersonA().getId() : null;
         interactionRepository.deleteById(id);
-        return "redirect:/interactions";
+        return "redirect:/persons/details/" + personId;
     }
 
     // LIST interactions for one person
@@ -100,8 +103,7 @@ public class InteractionWebController {
 
         model.addAttribute("person", person);
         model.addAttribute("interactions", interactionRepository.findByPersonAIdOrPersonBId(personId, personId));
-        model.addAttribute("cspNonce", getOrCreateNonce(request));
-
+        model.addAttribute("cspNonce", getOrCreateNonce(request)); // CSP nonce added
         return "person-interactions";
     }
 
@@ -111,17 +113,15 @@ public class InteractionWebController {
         Person person = personRepository.findById(personId)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid person ID: " + personId));
 
-        model.addAttribute("person", person);
-
         List<Interaction> interactions = interactionRepository.findByPersonAOrPersonB(person, person);
-        model.addAttribute("interactions", interactions);
-
         Map<Person, Long> interactionCounts = interactions.stream()
                 .map(i -> i.getPersonA().getId().equals(person.getId()) ? i.getPersonB() : i.getPersonA())
                 .collect(Collectors.groupingBy(p -> p, Collectors.counting()));
-        model.addAttribute("interactionCounts", interactionCounts);
 
-        model.addAttribute("cspNonce", getOrCreateNonce(request));
+        model.addAttribute("person", person);
+        model.addAttribute("interactions", interactions);
+        model.addAttribute("interactionCounts", interactionCounts);
+        model.addAttribute("cspNonce", getOrCreateNonce(request)); // CSP nonce added
 
         return "person-interactions";
     }

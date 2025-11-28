@@ -10,13 +10,12 @@
   <!-- qTip2 CSS -->
   <link th:attr="nonce=${cspNonce}" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/qtip2/3.0.3/jquery.qtip.min.css">
 
-  <!-- Inline styles with nonce -->
   <style th:attr="nonce=${cspNonce}">
     #cy {
       width: 100%;
       height: 500px;
       border: 1px solid #ccc;
-      position: relative; /* Fix for Cytoscape UI extensions */
+      position: relative;
     }
     .table-responsive {
       max-height: 70vh;
@@ -38,7 +37,16 @@
 
   <div class="card shadow-sm mb-4">
     <div class="card-body">
-      <h4 class="mb-3">Interaction Network</h4>
+      <h4 class="mb-3">
+        Interaction Network
+        <span class="ms-2 text-primary"
+              data-bs-toggle="tooltip"
+              data-bs-placement="right"
+              title="Click on person name or connection to navigate to details page"
+              style="cursor: pointer;">
+          &#9432;
+        </span>
+      </h4>
       <div id="cy"></div>
     </div>
   </div>
@@ -76,14 +84,12 @@
   <a th:href="@{/persons/details/{id}(id=${person.id})}" class="btn btn-secondary">Back to Person</a>
 </div>
 
-<!-- JS Libraries with nonce -->
 <script th:attr="nonce=${cspNonce}" src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 <script th:attr="nonce=${cspNonce}" src="https://cdnjs.cloudflare.com/ajax/libs/qtip2/3.0.3/jquery.qtip.min.js"></script>
 <script th:attr="nonce=${cspNonce}" src="https://cdnjs.cloudflare.com/ajax/libs/cytoscape/3.25.0/cytoscape.min.js"></script>
 <script th:attr="nonce=${cspNonce}" src="https://cdn.jsdelivr.net/npm/cytoscape-qtip@2.7.0/cytoscape-qtip.min.js"></script>
 <script th:attr="nonce=${cspNonce}" src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
-<!-- Inline scripts with nonce -->
 <script th:attr="nonce=${cspNonce}" th:inline="javascript">
   /*<![CDATA[*/
   document.querySelectorAll('.delete-btn').forEach(btn => {
@@ -92,14 +98,16 @@
       });
   });
 
-  // Cytoscape Graph
+  var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+  var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+    return new bootstrap.Tooltip(tooltipTriggerEl);
+  });
+
   var elements = [];
   var centralId = 'p' + [[${person.id}]];
   elements.push({ data: { id: centralId, label: '[[${person.name}]] [[${person.surname}]]' } });
 
   var typeColorMap = { 'NEUTRAL': '#888888', 'HOSTILE': '#ff0000', 'FRIENDLY': '#00aa00', 'SEXUAL': '#ff69b4' };
-
-  // Serialize interactions to JSON for JS
   var interactions = /*[[${interactions}]]*/ [];
 
   interactions.forEach(function(i) {
@@ -111,40 +119,84 @@
           elements.push({ data: { id: otherId, label: otherLabel } });
       }
 
-      var edgeColor = typeColorMap[i.interactionType] || '#888888';
-      var edgeContent = "<strong>Type:</strong> " + i.interactionType + "<br>" +
-                        "<strong>Date:</strong> " + i.dateHappened + "<br>" +
-                        "<strong>Content:</strong> " + i.content;
-
-      // Use data property for line color to be CSP-compliant
-      elements.push({ data: { source: centralId, target: otherId, content: edgeContent, lineColor: edgeColor } });
+      elements.push({
+          data: {
+              source: centralId,
+              target: otherId,
+              content: "<strong>Type:</strong> " + i.interactionType + "<br>" +
+                       "<strong>Date:</strong> " + i.dateHappened + "<br>" +
+                       "<strong>Content:</strong> " + i.content,
+              lineColor: typeColorMap[i.interactionType] || '#888888',
+              interactionId: i.id
+          }
+      });
   });
 
   var cy = cytoscape({
-      container: document.getElementById('cy'),
-      elements: elements,
-      style: [
-          { selector: 'node', style: {
-              'label': 'data(label)',
-              'background-color': '#1f77b4',
-              'color': '#fff',
-              'text-valign': 'center',
-              'text-halign': 'center',
-              'width': '70px',
-              'height': '70px',
-              'font-size': '8px'
-          }},
-          { selector: 'edge', style: {
-              'width': 3,
-              'line-color': 'data(lineColor)',
-              'target-arrow-shape': 'none',
-              'curve-style': 'bezier'
-          }}
-      ],
-      layout: { name: 'cose', animate: true }
+    container: document.getElementById('cy'),
+    elements: elements,
+    style: [
+        {
+            selector: 'node',
+            style: {
+                'label': 'data(label)',
+                'background-color': '#1760a0',
+                'color': '#fff',
+                'text-valign': 'center',
+                'text-halign': 'center',
+                'width': '70px',
+                'height': '70px',
+                'font-size': '8px',
+                'border-width': 2,
+                'border-color': '#0f4c81'
+            }
+        },
+        {
+            selector: '.hovered',
+            style: {
+                'background-color': '#154f88',
+                'border-color': '#007BFF'
+            }
+        },
+        {
+            selector: 'edge',
+            style: {
+                'width': 3,
+                'line-color': 'data(lineColor)',
+                'curve-style': 'bezier'
+            }
+        },
+        {
+            selector: '.edge-hovered',
+            style: {
+                'line-color': '#154f88',
+                'width': 5
+            }
+        }
+    ],
+    layout: { name: 'cose', animate: true }
   });
 
-  // Edge tooltips
+  cy.on('mouseover', 'node', evt => evt.target.addClass('hovered'));
+  cy.on('mouseout', 'node', evt => evt.target.removeClass('hovered'));
+
+  cy.on('tap', 'node', evt => {
+      var id = evt.target.id().substring(1);
+      window.location.href = '/persons/details/' + id;
+  });
+
+  // Edge hover effect
+  cy.on('mouseover', 'edge', evt => evt.target.addClass('edge-hovered'));
+  cy.on('mouseout', 'edge', evt => evt.target.removeClass('edge-hovered'));
+
+  // Edge click navigation
+  cy.on('tap', 'edge', evt => {
+      var interactionId = evt.target.data('interactionId');
+      if(interactionId) {
+          window.location.href = '/interactions/edit/' + interactionId;
+      }
+  });
+
   cy.edges().forEach(function(edge) {
       edge.qtip({
           content: edge.data('content'),

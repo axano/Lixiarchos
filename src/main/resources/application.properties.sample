@@ -40,3 +40,7 @@ logging.logback.rollingpolicy.max-history=10
 
 # Cap total disk usage
 logging.logback.rollingpolicy.total-size-cap=100MB
+
+# Rate limiting
+app.rateLimit.maxRequests = 5
+app.rateLimit.windowSeconds = 10

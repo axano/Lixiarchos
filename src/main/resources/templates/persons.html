@@ -55,6 +55,7 @@
                     <a th:href="@{/persons/edit/{id}(id=${person.id})}" class="btn btn-success btn-sm">Edit</a>
                     <a href="#" th:attr="data-id=${person.id}" class="btn btn-danger btn-sm deleteBtn">Delete</a>
                     <a th:href="@{/interactions/person/{personId}(personId=${person.id})}" class="btn btn-warning btn-sm">Interactions</a>
+
                 </td>
             </tr>
             </tbody>
