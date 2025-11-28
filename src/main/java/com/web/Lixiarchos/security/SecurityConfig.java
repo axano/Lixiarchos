@@ -38,6 +38,21 @@ public class SecurityConfig {
     @Value("${app.user.password}")
     private String userPassword;
 
+    // -------- HSTS CONFIG FROM PROPERTIES --------
+    @Value("${security.hsts.enabled:true}")
+    private boolean hstsEnabled;
+
+    @Value("${security.hsts.max-age:31536000}")
+    private long hstsMaxAge;
+
+    @Value("${security.hsts.include-subdomains:true}")
+    private boolean hstsIncludeSubdomains;
+
+    @Value("${security.hsts.preload:true}")
+    private boolean hstsPreload;
+
+    // --------------------------------------------------------------
+
     @Bean
     public UserDetailsService userDetailsService() {
         UserDetails admin = User.withUsername(adminUsername)
@@ -64,11 +79,11 @@ public class SecurityConfig {
                                             HttpServletResponse response,
                                             FilterChain filterChain) throws ServletException, IOException {
 
-                // Generate a random nonce
+                // Generate nonce
                 String nonce = Base64.getEncoder().encodeToString(UUID.randomUUID().toString().getBytes());
                 request.setAttribute("cspNonce", nonce);
 
-                // Set the CSP header
+                // Set CSP
                 String csp = "default-src 'self'; " +
                         "script-src 'self' 'nonce-" + nonce + "' https://cdn.jsdelivr.net https://code.jquery.com https://cdnjs.cloudflare.com; " +
                         "style-src 'self' 'nonce-" + nonce + "' 'unsafe-hashes' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; " +
@@ -76,7 +91,6 @@ public class SecurityConfig {
                         "font-src 'self' https://cdn.jsdelivr.net;";
 
                 response.setHeader("Content-Security-Policy", csp);
-
                 filterChain.doFilter(request, response);
             }
         };
@@ -84,19 +98,35 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+
         http
-                .headers(headers -> headers
-                        .xssProtection(xss -> xss
-                                .headerValue(org.springframework.security.web.header.writers.XXssProtectionHeaderWriter.HeaderValue.ENABLED_MODE_BLOCK)
-                        )
-                )
+                .headers(headers -> {
+                    // XSS Protection
+                    headers.xssProtection(xss -> xss
+                            .headerValue(org.springframework.security.web.header.writers.XXssProtectionHeaderWriter.HeaderValue.ENABLED_MODE_BLOCK)
+                    );
+
+                    // HSTS (configurable)
+                    if (hstsEnabled) {
+                        headers.httpStrictTransportSecurity(hsts -> hsts
+                                .includeSubDomains(hstsIncludeSubdomains)
+                                .preload(hstsPreload)
+                                .maxAgeInSeconds(hstsMaxAge)
+                        );
+                    }
+                })
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/css/**","/js/**","/images/**").permitAll()
+                        .requestMatchers("/css/**", "/js/**", "/images/**").permitAll()
                         .requestMatchers("/", "/login").permitAll()
                         .anyRequest().authenticated()
                 )
                 .formLogin(Customizer.withDefaults())
                 .logout(Customizer.withDefaults());
+
+        // Force HTTP-only cookies
+        http.sessionManagement(session -> session
+                .sessionCreationPolicy(org.springframework.security.config.http.SessionCreationPolicy.IF_REQUIRED)
+        );
 
         return http.build();
     }

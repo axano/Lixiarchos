@@ -44,3 +44,13 @@ logging.logback.rollingpolicy.total-size-cap=100MB
 # Rate limiting
 app.rateLimit.maxRequests = 5
 app.rateLimit.windowSeconds = 10
+
+# --- HSTS SETTINGS ---
+#security.hsts.enabled=true
+#security.hsts.max-age=31536000
+#security.hsts.include-subdomains=true
+#security.hsts.preload=true
+
+server.servlet.session.cookie.http-only=true
+server.servlet.session.cookie.secure=true
+server.servlet.session.cookie.same-site=strict

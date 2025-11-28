@@ -63,3 +63,4 @@ If restoring a backup, pulled through the admin panel, and you are moving from M
 ## TODO 
 
 - dockerize the application for easier deployment
+- make input validation more robust
