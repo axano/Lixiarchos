@@ -23,12 +23,12 @@
 
     <div class="mb-3">
       <label class="form-label">Content</label>
-      <textarea th:field="*{content}" class="form-control" rows="3"></textarea>
+      <textarea th:field="*{content}" class="form-control" rows="3"  maxlength="5000" required></textarea>
     </div>
 
     <div class="mb-3">
       <label class="form-label">Date Happened</label>
-      <input type="date" th:field="*{dateHappened}" class="form-control">
+      <input type="date" th:field="*{dateHappened}" class="form-control" required>
     </div>
 
     <div class="mb-3">

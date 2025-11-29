@@ -10,20 +10,22 @@
 <div class="container">
 
   <h1 class="mb-4" th:text="${person.id == null} ? 'Add Person' : 'Edit Person'">Person Form</h1>
-
+  <div th:if="${errorMessage}" class="alert alert-danger" role="alert">
+    <span th:text="${errorMessage}"></span>
+  </div>
   <form th:action="${person.id == null} ? @{/persons} : @{/persons/update/{id}(id=${person.id})}"
         th:object="${person}" method="post">
 
     <!-- Name -->
     <div class="mb-3">
-      <label class="form-label">Name</label>
-      <input type="text" th:field="*{name}" class="form-control" required>
+      <label class="form-label">Name*</label>
+      <input type="text" th:field="*{name}" class="form-control" maxlength="32" required>
     </div>
 
     <!-- Surname -->
     <div class="mb-3">
-      <label class="form-label">Surname</label>
-      <input type="text" th:field="*{surname}" class="form-control" required>
+      <label class="form-label">Surname*</label>
+      <input type="text" th:field="*{surname}" class="form-control" maxlength="32" required>
     </div>
 
     <!-- Sex -->
@@ -37,19 +39,19 @@
     <!-- Vocation -->
     <div class="mb-3">
       <label class="form-label">Vocation</label>
-      <input type="text" th:field="*{vocation}" class="form-control">
+      <input type="text" th:field="*{vocation}" class="form-control" maxlength="32">
     </div>
 
     <!-- Address -->
     <div class="mb-3">
       <label class="form-label">Address</label>
-      <input type="text" th:field="*{address}" class="form-control">
+      <input type="text" th:field="*{address}" class="form-control" maxlength="64">
     </div>
 
     <!-- Date of Birth -->
     <div class="mb-3">
-      <label class="form-label">Date of Birth</label>
-      <input type="date" th:field="*{dateOfBirth}" class="form-control">
+      <label class="form-label">Date of Birth*</label>
+      <input type="date" th:field="*{dateOfBirth}" class="form-control" required>
     </div>
 
     <!-- Religion -->
@@ -69,7 +71,7 @@
     <!-- Origin -->
     <div class="mb-3">
       <label class="form-label">Origin</label>
-      <input type="text" th:field="*{origin}" class="form-control">
+      <input type="text" th:field="*{origin}" class="form-control" maxlength="32">
     </div>
 
     <!-- Languages -->
@@ -83,13 +85,13 @@
     <!-- Email -->
     <div class="mb-3">
       <label class="form-label">Email</label>
-      <input type="email" th:field="*{email}" class="form-control" required>
+      <input type="email" th:field="*{email}" class="form-control" maxlength="128">
     </div>
 
     <!-- Telephone -->
     <div class="mb-3">
       <label class="form-label">Telephone</label>
-      <input type="tel" th:field="*{telephone}" class="form-control" placeholder="+123-456-7890">
+      <input type="tel" th:field="*{telephone}" class="form-control" placeholder="+123-456-7890" maxlength="15">
     </div>
 
     <button type="submit" class="btn btn-primary" th:text="${person.id == null} ? 'Save' : 'Update'">Save</button>

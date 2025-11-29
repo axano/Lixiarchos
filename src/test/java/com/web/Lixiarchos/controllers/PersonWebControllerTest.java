@@ -1,6 +1,8 @@
 package com.web.Lixiarchos.controllers;
 
 import com.web.Lixiarchos.enums.Language;
+import com.web.Lixiarchos.enums.Religion;
+import com.web.Lixiarchos.enums.Sex;
 import com.web.Lixiarchos.model.Interaction;
 import com.web.Lixiarchos.model.Note;
 import com.web.Lixiarchos.model.Person;
@@ -8,50 +10,40 @@ import com.web.Lixiarchos.model.exceptions.PersonNotFoundException;
 import com.web.Lixiarchos.repositories.InteractionRepository;
 import com.web.Lixiarchos.repositories.NoteRepository;
 import com.web.Lixiarchos.repositories.PersonRepository;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.*;
+
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 
 import jakarta.servlet.http.HttpServletRequest;
-
+import jakarta.validation.ConstraintViolationException;
+import java.time.LocalDate;
 import java.util.*;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 class PersonWebControllerTest {
 
-    @Mock
-    private PersonRepository personRepository;
-
-    @Mock
-    private NoteRepository noteRepository;
-
-    @Mock
-    private InteractionRepository interactionRepository;
-
-    @Mock
-    private Model model;
-
-    @Mock
-    private HttpServletRequest request;
+    @Mock private PersonRepository personRepository;
+    @Mock private NoteRepository noteRepository;
+    @Mock private InteractionRepository interactionRepository;
+    @Mock private Model model;
+    @Mock private HttpServletRequest request;
 
     @InjectMocks
     private PersonWebController controller;
 
     @BeforeEach
-    void setUp() {
+    void init() {
         MockitoAnnotations.openMocks(this);
-        // Provide a dummy nonce for all requests
         when(request.getAttribute("cspNonce")).thenReturn("test-nonce");
     }
 
-    // -------------------------------------------------------------
-    // GET /persons
-    // -------------------------------------------------------------
+    // --------------------------------------------------------------------
     @Test
     void showAllPersons_returnsViewAndModel() {
         List<Person> persons = List.of(new Person(), new Person());
@@ -64,9 +56,7 @@ class PersonWebControllerTest {
         assertEquals("persons", result);
     }
 
-    // -------------------------------------------------------------
-    // GET /persons/edit/{id}
-    // -------------------------------------------------------------
+    // --------------------------------------------------------------------
     @Test
     void showEditForm_validId_returnsForm() {
         Person p = new Person();
@@ -76,29 +66,32 @@ class PersonWebControllerTest {
         String view = controller.showEditForm(1, model, request);
 
         verify(model).addAttribute("person", p);
-        verify(model).addAttribute("sexOptions", com.web.Lixiarchos.enums.Sex.values());
-        verify(model).addAttribute("religionOptions", com.web.Lixiarchos.enums.Religion.values());
+        verify(model).addAttribute("sexOptions", Sex.values());
+        verify(model).addAttribute("religionOptions", Religion.values());
         verify(model).addAttribute("languageOptions", Language.values());
         verify(model).addAttribute("cspNonce", "test-nonce");
+
         assertEquals("person-form", view);
     }
 
     @Test
     void showEditForm_invalidId_throwsException() {
         when(personRepository.findById(1)).thenReturn(Optional.empty());
-        assertThrows(PersonNotFoundException.class,
-                () -> controller.showEditForm(1, model, request));
+        assertThrows(PersonNotFoundException.class, () ->
+                controller.showEditForm(1, model, request)
+        );
     }
 
-    // -------------------------------------------------------------
-    // POST /persons
-    // -------------------------------------------------------------
+    // --------------------------------------------------------------------
     @Test
-    void createPerson_setsDefaultFelon_whenNull() {
+    void createPerson_setsDefaultFelonWhenNull() {
         Person p = new Person();
         p.setIsFelon(null);
 
-        controller.createPerson(p);
+        BindingResult bindingResult = mock(BindingResult.class);
+        when(bindingResult.hasErrors()).thenReturn(false);
+
+        controller.createPerson(p, bindingResult, model, request);
 
         assertFalse(p.getIsFelon());
         verify(personRepository).save(p);
@@ -109,61 +102,90 @@ class PersonWebControllerTest {
         Person p = new Person();
         p.setIsFelon(false);
 
-        String redirect = controller.createPerson(p);
-        assertEquals("redirect:/persons", redirect);
+        BindingResult bindingResult = mock(BindingResult.class);
+        when(bindingResult.hasErrors()).thenReturn(false);
+
+        String result = controller.createPerson(p, bindingResult, model, request);
+
+        verify(personRepository).save(p);
+        assertEquals("redirect:/persons", result);
     }
 
-    // -------------------------------------------------------------
-    // GET /persons/new
-    // -------------------------------------------------------------
     @Test
-    void showCreateForm_setsDefaultsAndModel() {
+    void createPerson_validationError_returnsForm() {
+        Person p = new Person();
+        BindingResult bindingResult = mock(BindingResult.class);
+        when(bindingResult.hasErrors()).thenReturn(true);
+
+        String view = controller.createPerson(p, bindingResult, model, request);
+
+        verify(model).addAttribute("errorMessage", "So you think you're smart? Don't mess with the values.");
+        verify(model).addAttribute("person", p);
+        verify(model).addAttribute("cspNonce", "test-nonce");
+        assertEquals("person-form", view);
+        verify(personRepository, never()).save(any());
+    }
+
+    // --------------------------------------------------------------------
+    @Test
+    void showCreateForm_setsDefaults() {
         String view = controller.showCreateForm(model, request);
 
         ArgumentCaptor<Person> captor = ArgumentCaptor.forClass(Person.class);
         verify(model).addAttribute(eq("person"), captor.capture());
-        Person passed = captor.getValue();
+        Person created = captor.getValue();
 
-        assertEquals("empty@gmail.com", passed.getEmail());
-        assertNotNull(passed.getDateOfBirth());
-        verify(model).addAttribute("sexOptions", com.web.Lixiarchos.enums.Sex.values());
-        verify(model).addAttribute("religionOptions", com.web.Lixiarchos.enums.Religion.values());
+        assertEquals(LocalDate.of(1000, 1, 1), created.getDateOfBirth());
+
+        verify(model).addAttribute("sexOptions", Sex.values());
+        verify(model).addAttribute("religionOptions", Religion.values());
         verify(model).addAttribute("languageOptions", Language.values());
         verify(model).addAttribute("cspNonce", "test-nonce");
+
         assertEquals("person-form", view);
     }
 
-    // -------------------------------------------------------------
-    // POST /persons/update/{id}
-    // -------------------------------------------------------------
+    // --------------------------------------------------------------------
     @Test
     void updatePerson_setsIdAndSaves() {
         Person p = new Person();
-        String redirect = controller.updatePerson(5, p);
+        BindingResult bindingResult = mock(BindingResult.class);
+        when(bindingResult.hasErrors()).thenReturn(false);
+
+        String result = controller.updatePerson(5, p, bindingResult, model, request);
 
         assertEquals(5, p.getId());
         verify(personRepository).save(p);
-        assertEquals("redirect:/persons", redirect);
+        assertEquals("redirect:/persons", result);
     }
 
-    // -------------------------------------------------------------
-    // GET /persons/delete/{id}
-    // -------------------------------------------------------------
     @Test
-    void deletePerson_deletesAndRedirects() {
-        Model model = mock(Model.class);
-        HttpServletRequest request = mock(HttpServletRequest.class);
-        String redirect = controller.deletePerson(10, model, request);
+    void updatePerson_validationError_returnsForm() {
+        Person p = new Person();
+        BindingResult bindingResult = mock(BindingResult.class);
+        when(bindingResult.hasErrors()).thenReturn(true);
+
+        String view = controller.updatePerson(5, p, bindingResult, model, request);
+
+        verify(model).addAttribute("errorMessage", "So you think you're smart? Don't mess with the values.");
+        verify(model).addAttribute("person", p);
+        verify(model).addAttribute("cspNonce", "test-nonce");
+        assertEquals("person-form", view);
+        verify(personRepository, never()).save(any());
+    }
+
+    // --------------------------------------------------------------------
+    @Test
+    void deletePerson_deletesSuccessfully() {
+        String view = controller.deletePerson(10, model, request);
 
         verify(personRepository).deleteById(10);
-        assertEquals("redirect:/persons", redirect);
+        assertEquals("redirect:/persons", view);
     }
 
-    // -------------------------------------------------------------
-    // GET /persons/details/{id}
-    // -------------------------------------------------------------
+    // --------------------------------------------------------------------
     @Test
-    void showPersonDetails_loadsNotesAndInteractionsAndCounts() {
+    void showPersonDetails_loadsNotesAndInteractions() {
         Person main = new Person();
         main.setId(1);
         main.setName("John");
@@ -174,14 +196,13 @@ class PersonWebControllerTest {
         other.setName("Jane");
         other.setSurname("Doe");
 
-        Interaction interaction = new Interaction();
-        interaction.setPersonA(main);
-        interaction.setPersonB(other);
+        Interaction inter = new Interaction();
+        inter.setPersonA(main);
+        inter.setPersonB(other);
 
         when(personRepository.findById(1)).thenReturn(Optional.of(main));
         when(noteRepository.findByPersonId(1)).thenReturn(List.of(new Note()));
-        when(interactionRepository.findByPersonAOrPersonB(main, main))
-                .thenReturn(List.of(interaction));
+        when(interactionRepository.findByPersonAOrPersonB(main, main)).thenReturn(List.of(inter));
 
         String view = controller.showPersonDetails(1, model, request);
 
@@ -189,15 +210,14 @@ class PersonWebControllerTest {
         verify(model).addAttribute(eq("notes"), anyList());
         verify(model).addAttribute(eq("interactions"), anyList());
         verify(model).addAttribute(eq("interactionCounts"), anyMap());
-        verify(model).addAttribute("cspNonce", "test-nonce");
+        verify(model).addAttribute(eq("cspNonce"), eq("test-nonce"));
+
         assertEquals("person-details", view);
     }
 
-    // -------------------------------------------------------------
-    // GET /persons/interactions/{personId}
-    // -------------------------------------------------------------
+    // --------------------------------------------------------------------
     @Test
-    void showPersonInteractions_buildsLabelsAndValues() {
+    void showPersonInteractions_buildsGraphData() {
         Person main = new Person();
         main.setId(1);
         main.setName("Main");
@@ -228,6 +248,7 @@ class PersonWebControllerTest {
         verify(model).addAttribute("personName", "Main");
         verify(model).addAttribute("personSurname", "User");
         verify(model).addAttribute("cspNonce", "test-nonce");
+
         assertEquals("person-interactions", view);
     }
 }

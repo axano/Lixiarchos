@@ -22,30 +22,39 @@ public class Person {
     @PositiveOrZero
     private Integer id;
     @NotEmpty
+    @Size(max = 32)
+    @Column(length = 32)
     private String name;
     @NotEmpty
+    @Size(max = 32)
+    @Column(length = 32)
     private String surname;
     private Sex sex;
+    @Size(max = 32)
+    @Column(length = 32)
     private String vocation;
+    @Size(max = 64)
+    @Column(length = 64)
     private String address;
     @JsonFormat(pattern = "yyyy-MM-dd")
     @DateTimeFormat(pattern = "yyyy-MM-dd")
+    @NotNull
     private LocalDate dateOfBirth;
     @Enumerated(EnumType.STRING)
     private Religion religion;
     @JsonProperty("isFelon")
     @Column(name = "is_felon", nullable = false)
     private Boolean isFelon = false;
+    @Size(max = 32)
     private String origin;
-    @NotEmpty
     @ElementCollection(targetClass = Language.class)
     @Enumerated(EnumType.STRING)
     private Set<Language> languages = new HashSet<>();
-    @NotEmpty
     @Email
+    @Size(max = 128)
+    @Column(length = 128)
     private String email;
-    @NotEmpty
-    @Pattern(regexp="\\+?[0-9\\- ]{7,15}", message="Invalid phone number")
+    @Pattern(regexp = "^$|\\+?[0-9\\- ]{7,15}", message = "Invalid phone number")
     private String telephone;
 
 

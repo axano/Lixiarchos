@@ -9,9 +9,12 @@ import com.web.Lixiarchos.repositories.InteractionRepository;
 import com.web.Lixiarchos.repositories.NoteRepository;
 import com.web.Lixiarchos.repositories.PersonRepository;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.ConstraintViolationException;
+import jakarta.validation.Valid;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
@@ -64,19 +67,36 @@ public class PersonWebController {
     }
 
     @PostMapping
-    public String createPerson(@ModelAttribute Person person) {
+    public String createPerson(
+            @Valid @ModelAttribute Person person,
+            BindingResult bindingResult,
+            Model model,
+            HttpServletRequest request
+    ) {
         if (person.getIsFelon() == null) {
             person.setIsFelon(false);
         }
+
+        // Validation happens HERE – before Hibernate
+        if (bindingResult.hasErrors()) {
+            model.addAttribute("errorMessage",
+                    "So you think you're smart? Don't mess with the values.");
+            model.addAttribute("person", person);
+            model.addAttribute("cspNonce", generateCspNonce(request));
+            return "person-form";
+        }
+
+        // Safe — already validated
         personRepository.save(person);
+
         return "redirect:/persons";
     }
 
     @GetMapping("/new")
     public String showCreateForm(Model model, HttpServletRequest request) {
         Person person = new Person();
-        person.setEmail("empty@gmail.com");
-        person.setTelephone("+32 000 00 00 00");
+        //person.setEmail("empty@gmail.com");
+        //person.setTelephone("+32 000 00 00 00");
         person.setDateOfBirth(LocalDate.of(1000, 1, 1));
         model.addAttribute("person", person);
         model.addAttribute("sexOptions", com.web.Lixiarchos.enums.Sex.values());
@@ -87,9 +107,26 @@ public class PersonWebController {
     }
 
     @PostMapping("/update/{id}")
-    public String updatePerson(@PathVariable Integer id, @ModelAttribute Person person) {
+    public String updatePerson(
+            @PathVariable Integer id,
+            @Valid @ModelAttribute Person person,
+            BindingResult bindingResult,
+            Model model,
+            HttpServletRequest request
+    ) {
         person.setId(id);
+
+        // Bean Validation happens HERE (not in Hibernate)
+        if (bindingResult.hasErrors()) {
+            model.addAttribute("errorMessage", "So you think you're smart? Don't mess with the values.");
+            model.addAttribute("person", person);
+            model.addAttribute("cspNonce", generateCspNonce(request));
+            return "person-form";
+        }
+
+        // Safe, because the entity is already validated
         personRepository.save(person);
+
         return "redirect:/persons";
     }
 
