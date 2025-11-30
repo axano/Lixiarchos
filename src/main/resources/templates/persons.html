@@ -7,11 +7,68 @@
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 
-    <!-- Inline styles with nonce -->
     <style th:attr="nonce=${cspNonce}">
+        html, body {
+            height: 100%;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100%;
+        }
+
         .search-input {
             max-width: 300px;
             margin-bottom: 10px;
+        }
+
+        /* Scrollable table container */
+        .table-container {
+            max-height: calc(100vh - 280px);
+            overflow: auto;
+            position: relative;
+        }
+
+        /* Table layout adjustments for sticky header */
+        #personsTable {
+            min-width: 1200px; /* Make table wide enough */
+            border-collapse: separate;
+            border-spacing: 0;
+        }
+
+        /* Sticky table header */
+        #personsTable thead th {
+            position: sticky;
+            top: 0;
+            background: #ffffff;
+            z-index: 100;
+            border-bottom: 2px solid #dee2e6;
+            white-space: nowrap;
+        }
+
+        /* Sorting visuals */
+        th.sortable {
+            cursor: pointer;
+            user-select: none;
+        }
+        th.sortable.asc::after { content: " ▲"; }
+        th.sortable.desc::after { content: " ▼"; }
+
+        /* Prevent wrapping in table cells */
+        #personsTable td {
+            white-space: nowrap;
+            vertical-align: middle;
+        }
+
+        /* Make action buttons appear on one line */
+        .action-buttons {
+            display: flex;
+            flex-wrap: nowrap; /* Prevent wrapping */
+            gap: 0.25rem;      /* small spacing between buttons */
+        }
+
+        .action-buttons .btn {
+            min-width: 70px;   /* increase width so text fits */
         }
     </style>
 </head>
@@ -26,38 +83,39 @@
         <input type="text" id="searchInput" class="form-control search-input" placeholder="Search by Name or Surname">
         <a href="/persons/new" class="btn btn-primary">Add New Person</a>
     </div>
+
     <div th:if="${errorMessage}" class="alert alert-danger" role="alert">
         <span th:text="${errorMessage}"></span>
     </div>
-    <div class="table-responsive">
+
+    <!-- SCROLLABLE TABLE -->
+    <div class="table-container">
         <table class="table table-striped table-bordered align-middle" id="personsTable">
             <thead class="table-light">
             <tr>
-                <th>Name</th>
-                <th>Surname</th>
-                <th>Sex</th>
-                <th>Vocation</th>
-                <th>Address</th>
-                <th>DOB</th>
-                <th>Email</th>
+                <th class="sortable">Name</th>
+                <th class="sortable">Surname</th>
+                <th class="sortable">Address</th>
+                <th class="sortable">DOB</th>
+                <th class="sortable">Email</th>
                 <th>Actions</th>
             </tr>
             </thead>
+
             <tbody>
             <tr th:each="person : ${persons}">
                 <td th:text="${person.name}">Name</td>
                 <td th:text="${person.surname}">Surname</td>
-                <td th:text="${person.sex}">Sex</td>
-                <td th:text="${person.vocation}">Vocation</td>
                 <td th:text="${person.address}">Address</td>
                 <td th:text="${#temporals.format(person.dateOfBirth, 'yyyy-MM-dd')}">DOB</td>
                 <td th:text="${person.email}">Email</td>
-                <td class="d-flex flex-wrap gap-1">
-                    <a th:href="@{/persons/details/{id}(id=${person.id})}" class="btn btn-info btn-sm">Details</a>
-                    <a th:href="@{/persons/edit/{id}(id=${person.id})}" class="btn btn-success btn-sm">Edit</a>
-                    <a href="#" th:attr="data-id=${person.id}" class="btn btn-danger btn-sm deleteBtn">Delete</a>
-                    <a th:href="@{/interactions/person/{personId}(personId=${person.id})}" class="btn btn-warning btn-sm">Interactions</a>
-
+                <td>
+                    <div class="action-buttons">
+                        <a th:href="@{/persons/details/{id}(id=${person.id})}" class="btn btn-info btn-sm">Details</a>
+                        <a th:href="@{/persons/edit/{id}(id=${person.id})}" class="btn btn-success btn-sm">Edit</a>
+                        <a href="#" th:attr="data-id=${person.id}" class="btn btn-danger btn-sm deleteBtn">Delete</a>
+                        <a th:href="@{/interactions/person/{personId}(personId=${person.id})}" class="btn btn-warning btn-sm">Interactions</a>
+                    </div>
                 </td>
             </tr>
             </tbody>
@@ -68,28 +126,57 @@
 <!-- Bootstrap JS -->
 <script th:attr="nonce=${cspNonce}" src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
-<!-- Inline script with nonce -->
 <script th:attr="nonce=${cspNonce}">
+    // SEARCH FUNCTION
     const searchInput = document.getElementById('searchInput');
     const table = document.getElementById('personsTable');
-    const rows = table.tBodies[0].rows;
+    const tbody = table.tBodies[0];
 
-    searchInput.addEventListener('keyup', function () {
+    searchInput.addEventListener('keyup', () => {
         const filter = searchInput.value.toLowerCase();
-        for (let row of rows) {
-            const nameCell = row.cells[0].textContent.toLowerCase();
-            const surnameCell = row.cells[1].textContent.toLowerCase();
-            row.style.display = (nameCell.includes(filter) || surnameCell.includes(filter)) ? '' : 'none';
+        for (let row of tbody.rows) {
+            const name = row.cells[0].textContent.toLowerCase();
+            const surname = row.cells[1].textContent.toLowerCase();
+            row.style.display = (name.includes(filter) || surname.includes(filter)) ? '' : 'none';
         }
     });
 
-    // Delete buttons
-    Array.from(document.getElementsByClassName('deleteBtn')).forEach(btn => {
-        btn.addEventListener('click', function() {
-            const personId = this.dataset.id;
+    // DELETE FUNCTION
+    document.querySelectorAll('.deleteBtn').forEach(btn => {
+        btn.addEventListener('click', e => {
+            e.preventDefault();
+            const id = btn.dataset.id;
             if (confirm('Are you sure?')) {
-                window.location.href = `/persons/delete/${personId}`;
+                window.location.href = `/persons/delete/${id}`;
             }
+        });
+    });
+
+    // SORTING FUNCTION
+    document.querySelectorAll("#personsTable th.sortable").forEach((header, index) => {
+        header.addEventListener("click", () => {
+            const rows = Array.from(tbody.querySelectorAll("tr")).filter(r => r.style.display !== 'none');
+            const ascending = header.classList.toggle("asc");
+            header.classList.toggle("desc", !ascending);
+
+            document.querySelectorAll("#personsTable th.sortable")
+                .forEach(h => { if (h !== header) h.classList.remove("asc", "desc"); });
+
+            const parse = value => {
+                if (/^\d{4}-\d{2}-\d{2}$/.test(value)) return Date.parse(value);
+                const n = parseFloat(value);
+                return isNaN(n) ? value.toLowerCase() : n;
+            };
+
+            rows.sort((a, b) => {
+                const A = parse(a.children[index].innerText.trim());
+                const B = parse(b.children[index].innerText.trim());
+                if (A < B) return ascending ? -1 : 1;
+                if (A > B) return ascending ? 1 : -1;
+                return 0;
+            });
+
+            rows.forEach(r => tbody.appendChild(r));
         });
     });
 </script>
