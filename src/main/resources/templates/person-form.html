@@ -94,6 +94,13 @@
       <input type="tel" th:field="*{telephone}" class="form-control" placeholder="+123-456-7890" maxlength="15">
     </div>
 
+    <!-- Usernames -->
+    <div class="mb-3">
+      <label class="form-label">Usernames</label>
+      <input type="text" th:field="*{usernamesString}" class="form-control" placeholder="e.g., admin, user1, moderator" maxlength="256">
+      <small class="form-text text-muted">Enter multiple usernames separated by commas</small>
+    </div>
+
     <button type="submit" class="btn btn-primary" th:text="${person.id == null} ? 'Save' : 'Update'">Save</button>
     <a href="/persons" class="btn btn-secondary">Cancel</a>
   </form>

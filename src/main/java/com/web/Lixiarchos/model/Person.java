@@ -56,6 +56,9 @@ public class Person {
     private String email;
     @Pattern(regexp = "^$|\\+?[0-9\\- ]{7,15}", message = "Invalid phone number")
     private String telephone;
+    @ElementCollection(targetClass = String.class)
+    @Column(length = 256)
+    private Set<String> usernames = new HashSet<>();
 
 
     public Person(Integer id, String name, String surname, Sex sex, String vocation, String address, LocalDate dateOfBirth, Religion religion, Boolean isFelon, String origin, Set<Language> languages, String email, String telephone ){
@@ -208,6 +211,31 @@ public class Person {
         }
     }
 
+    public Set<String> getUsernames() { return usernames; }
+
+    public void setUsernames(Set<String> usernames) { this.usernames = usernames; }
+
+    @Transient
+    public String getUsernamesString() {
+        if (usernames == null || usernames.isEmpty()) return "";
+        return String.join(",", usernames);
+    }
+
+    public void setUsernamesString(String usernamesString) {
+        if (usernamesString != null && !usernamesString.trim().isEmpty()) {
+            String[] arr = usernamesString.split("\\s*,\\s*");
+            Set<String> usernameSet = new HashSet<>();
+            for (String s : arr) {
+                if (!s.trim().isEmpty()) {
+                    usernameSet.add(s.trim());
+                }
+            }
+            usernames = usernameSet;
+        } else {
+            usernames = new HashSet<>();
+        }
+    }
+
     public Boolean getFelon() {
         return isFelon;
     }
@@ -248,6 +276,7 @@ public class Person {
                 languages.stream().map(Language::name).collect(Collectors.joining(","))) +
                 ", email=" + email +
                 ", telephone=" + telephone +
+                ", usernames=" + (usernames == null ? "[]" : String.join(",", usernames)) +
                 '}';
     }
 }

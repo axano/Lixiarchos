@@ -63,4 +63,11 @@ If restoring a backup, pulled through the admin panel, and you are moving from M
 ## TODO 
 
 - dockerize the application for easier deployment
-- make input validation more robust
+- pre-existing list of possible values
+- keybord first functionality , n for new, / for search ctrl+s for save etc.
+- global relation graph
+- add diary functionality with calendar view
+- overview dashboard
+- highlight keywords in notes and interactions 
+- implement 2FA
+- implement recaptcha on login and notes, interactions person, creation

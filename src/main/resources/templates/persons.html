@@ -25,15 +25,18 @@
         /* Scrollable table container */
         .table-container {
             max-height: calc(100vh - 280px);
-            overflow: auto;
+            overflow-y: auto;
+            overflow-x: auto;
             position: relative;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
         }
 
         /* Table layout adjustments for sticky header */
         #personsTable {
-            min-width: 1200px; /* Make table wide enough */
-            border-collapse: separate;
-            border-spacing: 0;
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.95rem;
         }
 
         /* Sticky table header */
@@ -43,7 +46,9 @@
             background: #ffffff;
             z-index: 100;
             border-bottom: 2px solid #dee2e6;
-            white-space: nowrap;
+            padding: 0.75rem !important;
+            font-weight: 600;
+            text-align: left;
         }
 
         /* Sorting visuals */
@@ -54,21 +59,56 @@
         th.sortable.asc::after { content: " ▲"; }
         th.sortable.desc::after { content: " ▼"; }
 
-        /* Prevent wrapping in table cells */
+        /* Optimize table cell widths */
         #personsTable td {
-            white-space: nowrap;
+            padding: 0.75rem !important;
             vertical-align: middle;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
         }
 
-        /* Make action buttons appear on one line */
+        /* Set reasonable column widths */
+        #personsTable th:nth-child(1), #personsTable td:nth-child(1) { width: 12%; }  /* Name */
+        #personsTable th:nth-child(2), #personsTable td:nth-child(2) { width: 12%; }  /* Surname */
+        #personsTable th:nth-child(3), #personsTable td:nth-child(3) { width: 25%; }  /* Address */
+        #personsTable th:nth-child(4), #personsTable td:nth-child(4) { width: 12%; }  /* DOB */
+        #personsTable th:nth-child(5), #personsTable td:nth-child(5) { width: 18%; }  /* Email */
+        #personsTable th:nth-child(6), #personsTable td:nth-child(6) { width: 21%; }  /* Actions */
+
+        /* Make action buttons responsive */
         .action-buttons {
             display: flex;
-            flex-wrap: nowrap; /* Prevent wrapping */
-            gap: 0.25rem;      /* small spacing between buttons */
+            flex-wrap: nowrap;
+            gap: 0.25rem;
+            align-items: center;
+            justify-content: flex-start;
         }
 
         .action-buttons .btn {
-            min-width: 70px;   /* increase width so text fits */
+            padding: 0.25rem 0.35rem;
+            font-size: 0.75rem;
+            flex: 0 0 auto;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            border-radius: 3px;
+        }
+
+        /* Responsive adjustments for smaller screens */
+        @media (max-width: 1200px) {
+            #personsTable {
+                font-size: 0.9rem;
+            }
+            #personsTable th:nth-child(3), #personsTable td:nth-child(3) { width: 20%; }  /* Address */
+            .action-buttons .btn {
+                font-size: 0.75rem;
+                padding: 0.25rem 0.4rem;
+            }
+        }
+
+        @media (max-width: 992px) {
+            #personsTable th:nth-child(3), #personsTable td:nth-child(3) { width: 18%; }  /* Address */
+            #personsTable th:nth-child(5), #personsTable td:nth-child(5) { width: 15%; }  /* Email - hide on smaller screens */
         }
     </style>
 </head>
