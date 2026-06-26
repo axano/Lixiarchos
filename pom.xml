@@ -38,6 +38,7 @@
 		<org-springframework-security.spring-security-config.version>6.5.11</org-springframework-security.spring-security-config.version>
 		<org-springframework-security.spring-security-web.version>6.5.11</org-springframework-security.spring-security-web.version>
 		<com-fasterxml-jackson-core.jackson-core.version>2.21.1</com-fasterxml-jackson-core.jackson-core.version>
+		<org-springframework-boot.spring-boot-starter-web.version>3.5.7</org-springframework-boot.spring-boot-starter-web.version>
 	</properties>
 
 	<dependencies>
@@ -218,6 +219,11 @@
 				<groupId>com.fasterxml.jackson.core</groupId>
 				<artifactId>jackson-core</artifactId>
 				<version>${com-fasterxml-jackson-core.jackson-core.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-starter-web</artifactId>
+				<version>${org-springframework-boot.spring-boot-starter-web.version}</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
