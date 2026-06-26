@@ -34,6 +34,9 @@
 		<org-apache-tomcat.tomcat-catalina.version>11.0.22</org-apache-tomcat.tomcat-catalina.version>
 		<org-apache-tomcat.tomcat-util.version>11.0.22</org-apache-tomcat.tomcat-util.version>
 		<org-apache-tomcat-embed.tomcat-embed-websocket.version>11.0.22</org-apache-tomcat-embed.tomcat-embed-websocket.version>
+		<org-springframework-security.spring-security-core.version>6.5.11</org-springframework-security.spring-security-core.version>
+		<org-springframework-security.spring-security-config.version>6.5.11</org-springframework-security.spring-security-config.version>
+		<org-springframework-security.spring-security-web.version>6.5.11</org-springframework-security.spring-security-web.version>
 	</properties>
 
 	<dependencies>
@@ -189,6 +192,21 @@
 				<groupId>org.apache.tomcat.embed</groupId>
 				<artifactId>tomcat-embed-websocket</artifactId>
 				<version>${org-apache-tomcat-embed.tomcat-embed-websocket.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework.security</groupId>
+				<artifactId>spring-security-core</artifactId>
+				<version>${org-springframework-security.spring-security-core.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework.security</groupId>
+				<artifactId>spring-security-config</artifactId>
+				<version>${org-springframework-security.spring-security-config.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework.security</groupId>
+				<artifactId>spring-security-web</artifactId>
+				<version>${org-springframework-security.spring-security-web.version}</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
