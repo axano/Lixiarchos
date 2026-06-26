@@ -29,7 +29,11 @@
 		<org-thymeleaf.thymeleaf-spring5.version>3.1.5.RELEASE</org-thymeleaf.thymeleaf-spring5.version>
 		<org-thymeleaf.thymeleaf.version>3.1.5.RELEASE</org-thymeleaf.thymeleaf.version>
 		<org-springframework.spring-core.version>6.2.19</org-springframework.spring-core.version>
-		<org-springframework-boot.spring-boot-autoconfigure.version>3.5.14.1</org-springframework-boot.spring-boot-autoconfigure.version>
+		<org-apache-tomcat-embed.tomcat-embed-core.version>11.0.22</org-apache-tomcat-embed.tomcat-embed-core.version>
+		<org-apache-tomcat.tomcat-coyote.version>11.0.22</org-apache-tomcat.tomcat-coyote.version>
+		<org-apache-tomcat.tomcat-catalina.version>11.0.22</org-apache-tomcat.tomcat-catalina.version>
+		<org-apache-tomcat.tomcat-util.version>11.0.22</org-apache-tomcat.tomcat-util.version>
+		<org-apache-tomcat-embed.tomcat-embed-websocket.version>11.0.22</org-apache-tomcat-embed.tomcat-embed-websocket.version>
 	</properties>
 
 	<dependencies>
@@ -162,9 +166,29 @@
 				<version>${org-springframework.spring-core.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-autoconfigure</artifactId>
-				<version>${org-springframework-boot.spring-boot-autoconfigure.version}</version>
+				<groupId>org.apache.tomcat.embed</groupId>
+				<artifactId>tomcat-embed-core</artifactId>
+				<version>${org-apache-tomcat-embed.tomcat-embed-core.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.tomcat</groupId>
+				<artifactId>tomcat-coyote</artifactId>
+				<version>${org-apache-tomcat.tomcat-coyote.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.tomcat</groupId>
+				<artifactId>tomcat-catalina</artifactId>
+				<version>${org-apache-tomcat.tomcat-catalina.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.tomcat</groupId>
+				<artifactId>tomcat-util</artifactId>
+				<version>${org-apache-tomcat.tomcat-util.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.tomcat.embed</groupId>
+				<artifactId>tomcat-embed-websocket</artifactId>
+				<version>${org-apache-tomcat-embed.tomcat-embed-websocket.version}</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
