@@ -40,6 +40,14 @@
 		<org-thymeleaf.thymeleaf-spring6.version>3.1.5.RELEASE</org-thymeleaf.thymeleaf-spring6.version>
 		<org-thymeleaf.thymeleaf.version>3.1.5.RELEASE</org-thymeleaf.thymeleaf.version>
 		<tools-jackson-core.jackson-core.version>3.1.1</tools-jackson-core.jackson-core.version>
+		<org-springframework-boot.spring-boot.version>4.0.6.1</org-springframework-boot.spring-boot.version>
+		<org-springframework-boot.spring-boot-starter-data-jpa.version>4.1.0</org-springframework-boot.spring-boot-starter-data-jpa.version>
+		<org-springframework-security.spring-security-core.version>7.0.6</org-springframework-security.spring-security-core.version>
+		<org-springframework-boot.spring-boot-starter-security.version>4.0.7</org-springframework-boot.spring-boot-starter-security.version>
+		<com-fasterxml-jackson-core.jackson-core.version>2.21.1</com-fasterxml-jackson-core.jackson-core.version>
+		<org-springframework.spring-core.version>7.0.7.1</org-springframework.spring-core.version>
+		<org-springframework.spring-webmvc.version>7.0.7.1</org-springframework.spring-webmvc.version>
+		<org-springframework-boot.spring-boot-autoconfigure.version>4.0.6.1</org-springframework-boot.spring-boot-autoconfigure.version>
 	</properties>
 	<dependencies>
 
@@ -198,6 +206,46 @@
 				<groupId>tools.jackson.core</groupId>
 				<artifactId>jackson-core</artifactId>
 				<version>${tools-jackson-core.jackson-core.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot</artifactId>
+				<version>${org-springframework-boot.spring-boot.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-starter-data-jpa</artifactId>
+				<version>${org-springframework-boot.spring-boot-starter-data-jpa.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework.security</groupId>
+				<artifactId>spring-security-core</artifactId>
+				<version>${org-springframework-security.spring-security-core.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-starter-security</artifactId>
+				<version>${org-springframework-boot.spring-boot-starter-security.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.fasterxml.jackson.core</groupId>
+				<artifactId>jackson-core</artifactId>
+				<version>${com-fasterxml-jackson-core.jackson-core.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework</groupId>
+				<artifactId>spring-core</artifactId>
+				<version>${org-springframework.spring-core.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework</groupId>
+				<artifactId>spring-webmvc</artifactId>
+				<version>${org-springframework.spring-webmvc.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-autoconfigure</artifactId>
+				<version>${org-springframework-boot.spring-boot-autoconfigure.version}</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
