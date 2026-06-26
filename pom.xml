@@ -39,6 +39,7 @@
 		<org-thymeleaf.thymeleaf-spring5.version>3.1.5.RELEASE</org-thymeleaf.thymeleaf-spring5.version>
 		<org-thymeleaf.thymeleaf-spring6.version>3.1.5.RELEASE</org-thymeleaf.thymeleaf-spring6.version>
 		<tools-jackson-core.jackson-core.version>3.1.1</tools-jackson-core.jackson-core.version>
+		<org-springframework.spring-webmvc.version>7.0.7.1</org-springframework.spring-webmvc.version>
 	</properties>
 
 	<dependencies>
@@ -195,6 +196,11 @@
 				<groupId>tools.jackson.core</groupId>
 				<artifactId>jackson-core</artifactId>
 				<version>${tools-jackson-core.jackson-core.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework</groupId>
+				<artifactId>spring-webmvc</artifactId>
+				<version>${org-springframework.spring-webmvc.version}</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
