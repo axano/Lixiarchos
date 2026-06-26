@@ -41,8 +41,7 @@
 		<org-thymeleaf.thymeleaf.version>3.1.5.RELEASE</org-thymeleaf.thymeleaf.version>
 		<tools-jackson-core.jackson-core.version>3.1.1</tools-jackson-core.jackson-core.version>
 		<org-springframework-boot.spring-boot.version>4.0.6.1</org-springframework-boot.spring-boot.version>
-		<org-springframework-security.spring-security-core.version>7.0.6</org-springframework-security.spring-security-core.version>
-		<org-springframework-boot.spring-boot-starter-security.version>4.0.7</org-springframework-boot.spring-boot-starter-security.version>
+		<org-springframework-boot.spring-boot-starter-data-jpa.version>4.0.7</org-springframework-boot.spring-boot-starter-data-jpa.version>
 	</properties>
 	<dependencies>
 
@@ -208,14 +207,9 @@
 				<version>${org-springframework-boot.spring-boot.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>org.springframework.security</groupId>
-				<artifactId>spring-security-core</artifactId>
-				<version>${org-springframework-security.spring-security-core.version}</version>
-			</dependency>
-			<dependency>
 				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-starter-security</artifactId>
-				<version>${org-springframework-boot.spring-boot-starter-security.version}</version>
+				<artifactId>spring-boot-starter-data-jpa</artifactId>
+				<version>${org-springframework-boot.spring-boot-starter-data-jpa.version}</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
