@@ -40,6 +40,7 @@
 		<org-thymeleaf.thymeleaf-spring6.version>3.1.5.RELEASE</org-thymeleaf.thymeleaf-spring6.version>
 		<org-thymeleaf.thymeleaf.version>3.1.5.RELEASE</org-thymeleaf.thymeleaf.version>
 		<tools-jackson-core.jackson-core.version>3.1.1</tools-jackson-core.jackson-core.version>
+		<org-springframework-boot.spring-boot.version>4.0.6.1</org-springframework-boot.spring-boot.version>
 	</properties>
 	<dependencies>
 
@@ -198,6 +199,11 @@
 				<groupId>tools.jackson.core</groupId>
 				<artifactId>jackson-core</artifactId>
 				<version>${tools-jackson-core.jackson-core.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot</artifactId>
+				<version>${org-springframework-boot.spring-boot.version}</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
