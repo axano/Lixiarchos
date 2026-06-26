@@ -31,6 +31,11 @@
 	</scm>
 	<properties>
 		<java.version>21</java.version>
+		<org-apache-tomcat-embed.tomcat-embed-core.version>11.0.22</org-apache-tomcat-embed.tomcat-embed-core.version>
+		<org-apache-tomcat.tomcat-coyote.version>11.0.22</org-apache-tomcat.tomcat-coyote.version>
+		<org-apache-tomcat.tomcat-catalina.version>11.0.22</org-apache-tomcat.tomcat-catalina.version>
+		<org-apache-tomcat.tomcat-util.version>11.0.22</org-apache-tomcat.tomcat-util.version>
+		<org-apache-tomcat-embed.tomcat-embed-websocket.version>11.0.22</org-apache-tomcat-embed.tomcat-embed-websocket.version>
 	</properties>
 	<dependencies>
 
@@ -143,5 +148,34 @@
 			</plugin>
 		</plugins>
 	</build>
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>org.apache.tomcat.embed</groupId>
+				<artifactId>tomcat-embed-core</artifactId>
+				<version>${org-apache-tomcat-embed.tomcat-embed-core.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.tomcat</groupId>
+				<artifactId>tomcat-coyote</artifactId>
+				<version>${org-apache-tomcat.tomcat-coyote.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.tomcat</groupId>
+				<artifactId>tomcat-catalina</artifactId>
+				<version>${org-apache-tomcat.tomcat-catalina.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.tomcat</groupId>
+				<artifactId>tomcat-util</artifactId>
+				<version>${org-apache-tomcat.tomcat-util.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.tomcat.embed</groupId>
+				<artifactId>tomcat-embed-websocket</artifactId>
+				<version>${org-apache-tomcat-embed.tomcat-embed-websocket.version}</version>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
 
 </project>
