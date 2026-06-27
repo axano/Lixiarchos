@@ -25,7 +25,7 @@
 		<org-thymeleaf.thymeleaf-spring6.version>3.1.5.RELEASE</org-thymeleaf.thymeleaf-spring6.version>
 		<tools-jackson-core.jackson-core.version>3.1.1</tools-jackson-core.jackson-core.version>
 		<org-springframework.spring-webmvc.version>7.0.7.1</org-springframework.spring-webmvc.version>
-		<org-springframework-boot.spring-boot.version>4.0.6.1</org-springframework-boot.spring-boot.version>
+		<org-springframework-boot.spring-boot.version>3.5.14.1</org-springframework-boot.spring-boot.version>
 		<org-thymeleaf.thymeleaf-spring5.version>3.1.5.RELEASE</org-thymeleaf.thymeleaf-spring5.version>
 		<org-thymeleaf.thymeleaf.version>3.1.5.RELEASE</org-thymeleaf.thymeleaf.version>
 		<org-springframework.spring-core.version>6.2.19</org-springframework.spring-core.version>
