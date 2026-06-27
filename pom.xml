@@ -28,7 +28,7 @@
 		<org-springframework-boot.spring-boot.version>4.1.0</org-springframework-boot.spring-boot.version>
 		<org-thymeleaf.thymeleaf-spring5.version>3.1.5.RELEASE</org-thymeleaf.thymeleaf-spring5.version>
 		<org-thymeleaf.thymeleaf.version>3.1.5.RELEASE</org-thymeleaf.thymeleaf.version>
-		<org-springframework.spring-core.version>6.2.10</org-springframework.spring-core.version>
+		<org-springframework.spring-core.version>6.2.19</org-springframework.spring-core.version>
 		<org-apache-tomcat-embed.tomcat-embed-core.version>11.0.22</org-apache-tomcat-embed.tomcat-embed-core.version>
 		<org-apache-tomcat.tomcat-coyote.version>11.0.22</org-apache-tomcat.tomcat-coyote.version>
 		<org-apache-tomcat.tomcat-catalina.version>11.0.22</org-apache-tomcat.tomcat-catalina.version>
