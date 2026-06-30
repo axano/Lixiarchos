@@ -20,6 +20,7 @@ import org.springframework.validation.BindingResult;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolationException;
+import org.springframework.dao.DataIntegrityViolationException;
 import java.time.LocalDate;
 import java.util.*;
 
@@ -181,6 +182,51 @@ class PersonWebControllerTest {
 
         verify(personRepository).deleteById(10);
         assertEquals("redirect:/persons", view);
+    }
+
+    @Test
+    void deletePerson_dataIntegrityViolation_returnsPersonsViewWithError() {
+        List<Person> persons = List.of(new Person());
+        when(personRepository.findAll()).thenReturn(persons);
+        doThrow(new DataIntegrityViolationException("FK constraint"))
+                .when(personRepository).deleteById(10);
+
+        String view = controller.deletePerson(10, model, request);
+
+        verify(model).addAttribute(eq("errorMessage"),
+                eq("Cannot delete this person because they have related interactions or notes."));
+        verify(model).addAttribute("persons", persons);
+        assertEquals("persons", view);
+    }
+
+    @Test
+    void createPerson_isfelonTruePreserved_notOverwrittenToFalse() {
+        Person p = new Person();
+        p.setIsFelon(true);
+
+        BindingResult bindingResult = mock(BindingResult.class);
+        when(bindingResult.hasErrors()).thenReturn(false);
+
+        controller.createPerson(p, bindingResult, model, request);
+
+        assertTrue(p.getIsFelon());
+    }
+
+    // --------------------------------------------------------------------
+    @Test
+    void showPersonDetails_invalidId_throwsPersonNotFoundException() {
+        when(personRepository.findById(99)).thenReturn(Optional.empty());
+
+        assertThrows(PersonNotFoundException.class, () ->
+                controller.showPersonDetails(99, model, request));
+    }
+
+    @Test
+    void showPersonInteractions_invalidId_throwsPersonNotFoundException() {
+        when(personRepository.findById(99)).thenReturn(Optional.empty());
+
+        assertThrows(PersonNotFoundException.class, () ->
+                controller.showPersonInteractions(99, model, request));
     }
 
     // --------------------------------------------------------------------

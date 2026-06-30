@@ -162,14 +162,10 @@ public class Person {
         this.religion = religion;
     }
 
-    @JsonProperty("isFelon")
     public Boolean getIsFelon() {
         return isFelon;
     }
-    //public Boolean getFelon() {return isFelon;}
 
-    //public void setFelon(Boolean felon) {isFelon = felon;}
-    @JsonProperty("isFelon")
     public void setIsFelon(Boolean felon) {
         isFelon = felon;
     }
@@ -234,14 +230,6 @@ public class Person {
         } else {
             usernames = new HashSet<>();
         }
-    }
-
-    public Boolean getFelon() {
-        return isFelon;
-    }
-
-    public void setFelon(Boolean felon) {
-        isFelon = felon;
     }
 
     public String getTelephone() {

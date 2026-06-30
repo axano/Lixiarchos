@@ -128,6 +128,112 @@ class InteractionApiControllerTest {
         assertThat(ex.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
     }
 
+    // --- POST create — additional validation ---
+
+    @Test
+    void create_NullPersonA_ThrowsBadRequest() {
+        interaction.setPersonA(null);
+
+        ResponseStatusException ex = assertThrows(ResponseStatusException.class, () -> controller.create(interaction));
+        assertThat(ex.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+        assertThat(ex.getReason()).isEqualTo("PersonA is required");
+    }
+
+    @Test
+    void create_PersonAWithNullId_ThrowsBadRequest() {
+        Person noId = new Person();
+        noId.setId(null);
+        interaction.setPersonA(noId);
+
+        ResponseStatusException ex = assertThrows(ResponseStatusException.class, () -> controller.create(interaction));
+        assertThat(ex.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+        assertThat(ex.getReason()).isEqualTo("PersonA is required");
+    }
+
+    @Test
+    void create_NullPersonB_ThrowsBadRequest() {
+        interaction.setPersonB(null);
+
+        ResponseStatusException ex = assertThrows(ResponseStatusException.class, () -> controller.create(interaction));
+        assertThat(ex.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+        assertThat(ex.getReason()).isEqualTo("PersonB is required");
+    }
+
+    @Test
+    void create_PersonBWithNullId_ThrowsBadRequest() {
+        Person noId = new Person();
+        noId.setId(null);
+        interaction.setPersonB(noId);
+
+        ResponseStatusException ex = assertThrows(ResponseStatusException.class, () -> controller.create(interaction));
+        assertThat(ex.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+        assertThat(ex.getReason()).isEqualTo("PersonB is required");
+    }
+
+    @Test
+    void create_PersonBDoesNotExist_ThrowsBadRequest() {
+        when(personRepository.existsById(1)).thenReturn(true);
+        when(personRepository.existsById(2)).thenReturn(false);
+
+        ResponseStatusException ex = assertThrows(ResponseStatusException.class, () -> controller.create(interaction));
+        assertThat(ex.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+        assertThat(ex.getReason()).isEqualTo("PersonB does not exist");
+    }
+
+    // --- PUT update — additional validation ---
+
+    @Test
+    void update_NullPersonA_ThrowsBadRequest() {
+        when(interactionRepository.existsById(1)).thenReturn(true);
+        interaction.setPersonA(null);
+
+        ResponseStatusException ex = assertThrows(ResponseStatusException.class, () -> controller.update(1, interaction));
+        assertThat(ex.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+        assertThat(ex.getReason()).isEqualTo("PersonA is required");
+    }
+
+    @Test
+    void update_NullPersonB_ThrowsBadRequest() {
+        when(interactionRepository.existsById(1)).thenReturn(true);
+        interaction.setPersonB(null);
+
+        ResponseStatusException ex = assertThrows(ResponseStatusException.class, () -> controller.update(1, interaction));
+        assertThat(ex.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+        assertThat(ex.getReason()).isEqualTo("PersonB is required");
+    }
+
+    @Test
+    void update_SamePersons_ThrowsBadRequest() {
+        when(interactionRepository.existsById(1)).thenReturn(true);
+        when(personRepository.existsById(1)).thenReturn(true);
+        interaction.setPersonB(personA);
+
+        ResponseStatusException ex = assertThrows(ResponseStatusException.class, () -> controller.update(1, interaction));
+        assertThat(ex.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+        assertThat(ex.getReason()).isEqualTo("PersonA and PersonB must be different");
+    }
+
+    @Test
+    void update_PersonADoesNotExist_ThrowsBadRequest() {
+        when(interactionRepository.existsById(1)).thenReturn(true);
+        when(personRepository.existsById(1)).thenReturn(false);
+
+        ResponseStatusException ex = assertThrows(ResponseStatusException.class, () -> controller.update(1, interaction));
+        assertThat(ex.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+        assertThat(ex.getReason()).isEqualTo("PersonA does not exist");
+    }
+
+    @Test
+    void update_PersonBDoesNotExist_ThrowsBadRequest() {
+        when(interactionRepository.existsById(1)).thenReturn(true);
+        when(personRepository.existsById(1)).thenReturn(true);
+        when(personRepository.existsById(2)).thenReturn(false);
+
+        ResponseStatusException ex = assertThrows(ResponseStatusException.class, () -> controller.update(1, interaction));
+        assertThat(ex.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+        assertThat(ex.getReason()).isEqualTo("PersonB does not exist");
+    }
+
     // --- DELETE ---
     @Test
     void delete_ExistingInteraction_DeletesSuccessfully() {

@@ -14,8 +14,6 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import java.io.IOException;
 import java.time.Instant;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
-
 @Component
 public class IpRateLimitFilter extends OncePerRequestFilter {
 
@@ -27,7 +25,7 @@ public class IpRateLimitFilter extends OncePerRequestFilter {
 
     private static class Counter {
         volatile long windowStartEpochSec;
-        final AtomicInteger count = new AtomicInteger(0);
+        int count = 0;
     }
 
     // Leak-proof Caffeine cache:
@@ -50,17 +48,16 @@ public class IpRateLimitFilter extends OncePerRequestFilter {
         Counter counter = ipCounters.get(ip, k -> {
             Counter c = new Counter();
             c.windowStartEpochSec = now;
-            c.count.set(0);
             return c;
         });
 
         synchronized (counter) {
             if (now - counter.windowStartEpochSec >= windowSeconds) {
                 counter.windowStartEpochSec = now;
-                counter.count.set(0);
+                counter.count = 0;
             }
 
-            int current = counter.count.incrementAndGet();
+            int current = ++counter.count;
             if (current > maxRequests) {
                 // rate limit hit
                 response.setStatus(429);

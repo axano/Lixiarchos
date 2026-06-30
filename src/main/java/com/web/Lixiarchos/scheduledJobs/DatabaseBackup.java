@@ -17,6 +17,8 @@ public class DatabaseBackup {
     private final DatabaseBackupService backupService;
     @Value("${app.backup.path}")
     private String backupDir;
+    @Value("${app.notification.email}")
+    private String notificationEmail;
 
     public DatabaseBackup(DatabaseBackupService backupService) {
         this.backupService = backupService;
@@ -38,7 +40,7 @@ public class DatabaseBackup {
             }
 
             System.out.println("Backup saved: " + out.getAbsolutePath());
-            sendTextEmail("perselis.e@gmail.com",
+            sendTextEmail(notificationEmail,
                     "Database Backup Created",
                     "A new database backup has been created: " + backup.filename);
             deleteOldBackups();

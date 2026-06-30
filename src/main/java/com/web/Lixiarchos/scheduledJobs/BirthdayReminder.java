@@ -3,6 +3,7 @@ package com.web.Lixiarchos.scheduledJobs;
 import com.web.Lixiarchos.model.Person;
 import com.web.Lixiarchos.repositories.PersonRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
@@ -17,6 +18,9 @@ public class BirthdayReminder {
 
     @Autowired
     private PersonRepository personRepository;
+
+    @Value("${app.notification.email}")
+    private String notificationEmail;
 
     // Runs daily at 03:10 AM
     @Scheduled(cron = "0 10 03 * * *")
@@ -43,7 +47,7 @@ public class BirthdayReminder {
                 String body = subject;
 
                 try {
-                    sendTextEmail("perselis.e@gmail.com", subject, body);
+                    sendTextEmail(notificationEmail, subject, body);
                 } catch (Exception e) {
                     System.err.println("Failed to send email: " + e.getMessage());
                 }

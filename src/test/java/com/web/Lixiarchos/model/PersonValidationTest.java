@@ -69,6 +69,143 @@ class PersonValidationTest {
         assertThat(person.getLanguages().size()).isEqualTo(2);
     }
 
+    // ---------------- Field constraints ----------------
+
+    @Test
+    void nameNull_producesViolation() {
+        Person person = createValidPerson();
+        person.setName(null);
+        assertThat(validator.validate(person))
+                .anyMatch(v -> v.getPropertyPath().toString().equals("name"));
+    }
+
+    @Test
+    void nameEmpty_producesViolation() {
+        Person person = createValidPerson();
+        person.setName("");
+        assertThat(validator.validate(person))
+                .anyMatch(v -> v.getPropertyPath().toString().equals("name"));
+    }
+
+    @Test
+    void nameTooLong_producesViolation() {
+        Person person = createValidPerson();
+        person.setName("A".repeat(33));
+        assertThat(validator.validate(person))
+                .anyMatch(v -> v.getPropertyPath().toString().equals("name"));
+    }
+
+    @Test
+    void surnameNull_producesViolation() {
+        Person person = createValidPerson();
+        person.setSurname(null);
+        assertThat(validator.validate(person))
+                .anyMatch(v -> v.getPropertyPath().toString().equals("surname"));
+    }
+
+    @Test
+    void surnameEmpty_producesViolation() {
+        Person person = createValidPerson();
+        person.setSurname("");
+        assertThat(validator.validate(person))
+                .anyMatch(v -> v.getPropertyPath().toString().equals("surname"));
+    }
+
+    @Test
+    void dateOfBirthNull_producesViolation() {
+        Person person = createValidPerson();
+        person.setDateOfBirth(null);
+        assertThat(validator.validate(person))
+                .anyMatch(v -> v.getPropertyPath().toString().equals("dateOfBirth"));
+    }
+
+    @Test
+    void invalidEmail_producesViolation() {
+        Person person = createValidPerson();
+        person.setEmail("not-an-email");
+        assertThat(validator.validate(person))
+                .anyMatch(v -> v.getPropertyPath().toString().equals("email"));
+    }
+
+    @Test
+    void nullEmail_noViolation() {
+        // @Email does not apply to null — null is allowed
+        Person person = createValidPerson();
+        person.setEmail(null);
+        assertThat(validator.validate(person))
+                .noneMatch(v -> v.getPropertyPath().toString().equals("email"));
+    }
+
+    @Test
+    void invalidTelephone_producesViolation() {
+        Person person = createValidPerson();
+        person.setTelephone("abc");
+        assertThat(validator.validate(person))
+                .anyMatch(v -> v.getPropertyPath().toString().equals("telephone"));
+    }
+
+    @Test
+    void emptyTelephone_noViolation() {
+        // regex allows empty string via ^$ alternative
+        Person person = createValidPerson();
+        person.setTelephone("");
+        assertThat(validator.validate(person))
+                .noneMatch(v -> v.getPropertyPath().toString().equals("telephone"));
+    }
+
+    @Test
+    void nullTelephone_noViolation() {
+        // @Pattern does not apply to null
+        Person person = createValidPerson();
+        person.setTelephone(null);
+        assertThat(validator.validate(person))
+                .noneMatch(v -> v.getPropertyPath().toString().equals("telephone"));
+    }
+
+    @Test
+    void validPerson_zeroViolations() {
+        assertThat(validator.validate(createValidPerson())).isEmpty();
+    }
+
+    // ---------------- setUsernamesString / getUsernamesString ----------------
+
+    @Test
+    void setUsernamesString_commaSeparated_parsesAll() {
+        Person person = createValidPerson();
+        person.setUsernamesString("user1,user2,user3");
+        assertThat(person.getUsernames()).containsExactlyInAnyOrder("user1", "user2", "user3");
+    }
+
+    @Test
+    void setUsernamesString_nullInput_givesEmptySet() {
+        Person person = createValidPerson();
+        person.setUsernamesString(null);
+        assertThat(person.getUsernames()).isEmpty();
+    }
+
+    @Test
+    void setUsernamesString_emptyInput_givesEmptySet() {
+        Person person = createValidPerson();
+        person.setUsernamesString("");
+        assertThat(person.getUsernames()).isEmpty();
+    }
+
+    @Test
+    void setUsernamesString_blankEntries_skipped() {
+        Person person = createValidPerson();
+        person.setUsernamesString("user1,,user2");
+        assertThat(person.getUsernames()).containsExactlyInAnyOrder("user1", "user2");
+    }
+
+    @Test
+    void getUsernamesString_multipleUsernames_joinedByComma() {
+        Person person = createValidPerson();
+        person.setUsernames(new java.util.HashSet<>(java.util.Set.of("alpha", "beta")));
+        String result = person.getUsernamesString();
+        assertThat(result).contains("alpha");
+        assertThat(result).contains("beta");
+    }
+
     // ---------------- Helper ----------------
     private Person createValidPerson() {
         Person person = new Person();

@@ -178,4 +178,48 @@ class PersonApiControllerTest {
         mockMvc.perform(delete("/api/persons/9"))
                 .andExpect(status().isNotFound());
     }
+
+    @Test
+    void createPerson_emptyName_returns400() throws Exception {
+        Person invalid = createValidPerson("John");
+        invalid.setName("");
+
+        mockMvc.perform(post("/api/persons")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(invalid)))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void createPerson_nullDateOfBirth_returns400() throws Exception {
+        Person invalid = createValidPerson("John");
+        invalid.setDateOfBirth(null);
+
+        mockMvc.perform(post("/api/persons")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(invalid)))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void createPerson_invalidEmail_returns400() throws Exception {
+        Person invalid = createValidPerson("John");
+        invalid.setEmail("not-an-email");
+
+        mockMvc.perform(post("/api/persons")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(invalid)))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void createPerson_invalidTelephone_returns400() throws Exception {
+        Person invalid = createValidPerson("John");
+        invalid.setTelephone("abc");
+
+        mockMvc.perform(post("/api/persons")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(invalid)))
+                .andExpect(status().isBadRequest());
+    }
 }

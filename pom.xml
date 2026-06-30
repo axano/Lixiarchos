@@ -152,6 +152,15 @@
 					<mainClass>com.web.Lixiarchos.LixiarchosApplication</mainClass>
 				</configuration>
 			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<configuration>
+					<!-- Byte Buddy does not yet officially support this JVM version.
+					     The experimental flag allows it to instrument classes anyway. -->
+					<argLine>-Dnet.bytebuddy.experimental=true</argLine>
+				</configuration>
+			</plugin>
 		</plugins>
 	</build>
 	<dependencyManagement>
